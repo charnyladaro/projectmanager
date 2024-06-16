@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Dashboard</title>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <a href="index.html" class="btn">Home</a>
+            <a href="login.html" class="btn">Logout</a>
+            <button id="add-project-btn" class="btn">Add Project</button>
+            <div id="project-list" class="project-list">
+                <!-- Project list will be dynamically added here -->
+            </div>
+        </div>
+        <div class="main-content">
+            <h1>Dashboard</h1>            
+            <div id="current-project" class="current-project">
+                <!-- Current project tasks will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Form Modal -->
+    <div id="project-form-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <form id="project-form" class="form">
+                <label for="project-name">Project Name:</label>
+                <input type="text" id="project-name" name="project-name" required>
+                <label for="project-description">Project Description:</label>
+                <textarea id="project-description" name="project-description"></textarea>
+                <button type="submit" class="btn">Add Project</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Task Form Modal -->
+    <div id="task-form-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="task-close-btn">&times;</span>
+            <form id="task-form" class="form">
+                <label for="task-name">Task Name:</label>
+                <input type="text" id="task-name" name="task-name" required>
+                <label for="task-description">Task Description:</label>
+                <textarea id="task-description" name="task-description"></textarea>
+                <button type="submit" class="btn">Add Task</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
