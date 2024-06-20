@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Add Project</title>
+  </head>
+  <body>
+    <h1>Add Project</h1>
+    <form method="POST" action="{{ url_for('add_project') }}">
+      {{ form.hidden_tag() }}
+      <p>
+        {{ form.name.label }}<br />
+        {{ form.name(size=32) }}<br />
+        {% for error in form.name.errors %}
+        <span style="color: red">[{{ error }}]</span><br />
+        {% endfor %}
+      </p>
+      <p>{{ form.submit() }}</p>
+    </form>
+  </body>
+</html>
