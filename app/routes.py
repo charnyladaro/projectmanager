@@ -3,7 +3,16 @@ from . import db
 from .models import Project, Task, Comment
 from .forms import ProjectForm, TaskForm, CommentForm
 from flask import current_app as app
-from datetime import timedelta
+from datetime import timedelta, datetime
+from werkzeug.utils import secure_filename
+import os
+
+
+tasks = {
+    1: {"id": 1, "name": "Task 1", "status": "Not started"},
+    2: {"id": 2, "name": "Task 2", "status": "In progress"},
+    3: {"id": 3, "name": "Task 3", "status": "Completed"},
+}
 
 
 @app.route("/")
@@ -61,13 +70,24 @@ def update_project(project_id):
     return redirect(url_for("index"))
 
 
+@app.route("/task_detail/<int:task_id>")
+def task_detail(task_id):
+    task = tasks.get(task_id)
+    if task:
+        return render_template("task_detail.html", task=task)
+    else:
+        return jsonify({"error": "Task not found"}), 404
+
+
 @app.route("/update_task_status/<int:task_id>", methods=["POST"])
 def update_task_status(task_id):
-    task = Task.query.get_or_404(task_id)
-    status = request.json.get("status")
-    task.status = status
-    db.session.commit()
-    return jsonify({"success": True})
+    # Example: Updating task status based on POST request data
+    new_status = request.json.get("status")  # Assuming status is sent in JSON format
+    if new_status:
+        tasks[task_id]["status"] = new_status
+        return jsonify({"success": True}), 200
+    else:
+        return jsonify({"error": "No status provided"}), 400
 
 
 @app.route("/update_task_name/<int:task_id>", methods=["POST"])
@@ -124,25 +144,73 @@ def delete_comment(comment_id):
 @app.route("/start_timer/<int:task_id>", methods=["POST"])
 def start_timer(task_id):
     task = Task.query.get_or_404(task_id)
-    task.start_timer()
-    db.session.commit()
+    if task.status != "On-going":  # Prevent resetting start time if already running
+        task.start_time = datetime.utcnow()
+        task.status = "On-going"
+        task.timer_status = "On-going"
+        task.paused_time = None  # Reset paused time
+        db.session.commit()
     return jsonify(success=True)
 
 
 @app.route("/pause_timer/<int:task_id>", methods=["POST"])
 def pause_timer(task_id):
     task = Task.query.get_or_404(task_id)
-    task.pause_timer()
-    db.session.commit()
+    if task.status == "On-going":
+        task.paused_time = datetime.utcnow()
+        task.status = "Paused"
+        task.timer_status = "Paused"
+        db.session.commit()
     return jsonify(success=True)
 
 
 @app.route("/stop_timer/<int:task_id>", methods=["POST"])
 def stop_timer(task_id):
     task = Task.query.get_or_404(task_id)
-    task.stop_timer()
-    db.session.commit()
+    if task.status in ["On-going", "Paused"]:
+        task.stop_time = datetime.utcnow()
+        task.status = "Done"
+        task.timer_status = "Done"
+        if task.start_time:
+            total_seconds = (task.stop_time - task.start_time).total_seconds()
+            if task.paused_time:
+                total_seconds -= (task.paused_time - task.start_time).total_seconds()
+            task.total_time += total_seconds
+        db.session.commit()
     return jsonify(success=True)
+
+
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in {
+        "png",
+        "jpg",
+        "jpeg",
+        "gif",
+        "pdf",
+        "docx",
+    }
+
+
+@app.route("/upload_file/<int:task_id>", methods=["POST"])
+def upload_file(task_id):
+    if request.method == "POST":
+        task = Task.query.get_or_404(task_id)
+        if "file" not in request.files:
+            flash("No file part")
+            return redirect(request.url)
+        file = request.files["file"]
+        if file.filename == "":
+            flash("No selected file")
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+            task.file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+            db.session.commit()
+            return redirect(url_for("task_detail", task_id=task.id))
+        return redirect(request.url)
+    else:
+        return "Method Not Allowed", 405
 
 
 @app.template_filter("format_time")

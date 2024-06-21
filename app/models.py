@@ -20,26 +20,26 @@ class Task(db.Model):
     paused_time = db.Column(db.DateTime, nullable=True)
     total_time = db.Column(db.Float, default=0.0)
     status = db.Column(db.String(20), default="Not-yet-started")
+    file_path = db.Column(db.String(200), nullable=True)  # New column for file path
     comments = db.relationship("Comment", backref="task", lazy=True)
 
     def start_timer(self):
         if self.status != "On-going":
             if self.paused_time:
-                # Adjust start time to account for paused duration
-                pause_duration = (datetime.utcnow() - self.paused_time).total_seconds()
-                self.start_time = (
-                    datetime.utcnow()
-                    - (datetime.utcnow() - self.start_time)
-                    - pause_duration
+                pause_duration = (
+                    datetime.datetime.utcnow() - self.paused_time
+                ).total_seconds()
+                self.start_time = self.start_time + datetime.timedelta(
+                    seconds=pause_duration
                 )
                 self.paused_time = None
             else:
-                self.start_time = datetime.utcnow()
+                self.start_time = datetime.datetime.utcnow()
             self.status = "On-going"
 
     def pause_timer(self):
         if self.status == "On-going":
-            self.paused_time = datetime.utcnow()
+            self.paused_time = datetime.datetime.utcnow()
             if self.start_time:
                 elapsed = (self.paused_time - self.start_time).total_seconds()
                 self.total_time += elapsed
@@ -47,7 +47,7 @@ class Task(db.Model):
 
     def stop_timer(self):
         if self.status in ["On-going", "Paused"]:
-            self.stop_time = datetime.utcnow()
+            self.stop_time = datetime.datetime.utcnow()
             if self.status == "On-going":
                 elapsed = (self.stop_time - self.start_time).total_seconds()
                 self.total_time += elapsed

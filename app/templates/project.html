@@ -19,13 +19,16 @@
                 () => updateTimer(taskId),
                 1000
               );
-            } else if (!timers[taskId].interval) {
-              timers[taskId].startTime =
-                Date.now() - timers[taskId].elapsedTime;
-              timers[taskId].interval = setInterval(
-                () => updateTimer(taskId),
-                1000
-              );
+            } else {
+              // Timer exists, but it might be paused
+              if (!timers[taskId].interval) {
+                timers[taskId].startTime =
+                  Date.now() - timers[taskId].elapsedTime;
+                timers[taskId].interval = setInterval(
+                  () => updateTimer(taskId),
+                  1000
+                );
+              }
             }
           }
         });
@@ -61,6 +64,15 @@
             document.getElementById(`timer-display-${taskId}`).textContent =
               "00:00:00";
 
+            // Hide start and pause buttons
+            document.querySelector(`#start-${taskId}`).style.display = "none";
+            document.querySelector(`#pause-${taskId}`).style.display = "none";
+
+            // Change the stop button text to "Done"
+            const stopButton = document.querySelector(`#stop-${taskId}`);
+            stopButton.textContent = "Done";
+            stopButton.disabled = true;
+
             delete timers[taskId];
           }
         });
@@ -74,20 +86,20 @@
           formatTime(elapsedTime);
       }
 
-      function parseTimeString(timeString) {
-        const [hours, minutes, seconds] = timeString.split(":").map(Number);
-        return hours * 3600 + minutes * 60 + seconds;
+      function formatTime(seconds) {
+        const hrs = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        return `${hrs.toString().padStart(2, "0")}:${mins
+          .toString()
+          .padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
       }
 
-      function formatTime(seconds) {
-        const hours = String(Math.floor(seconds / 3600)).padStart(2, "0");
-        const minutes = String(Math.floor((seconds % 3600) / 60)).padStart(
-          2,
-          "0"
-        );
-        const remainingSeconds = String(seconds % 60).padStart(2, "0");
-        return `${hours}:${minutes}:${remainingSeconds}`;
+      function parseTimeString(timeString) {
+        const parts = timeString.split(":").map(Number);
+        return parts[0] * 3600 + parts[1] * 60 + parts[2];
       }
+
       function editTask(taskId) {
         var content = prompt("Edit your task:", $("#task-" + taskId).text());
         if (content) {
@@ -189,8 +201,11 @@
     </form>
     <ul>
       {% for task in tasks %}
-      <li id="task-{{ task.id }}" class="taskName">
-        {{ task.name }}
+    <li id="task-{{ task.id }}" class="taskName">
+        <a href="{{ url_for('task_detail', task_id=task.id) }}">{{ task.name }}</a>
+    </li>
+
+
         <div class="timer-display" id="timer-display-{{ task.id }}">
           00:00:00
         </div>
@@ -198,13 +213,25 @@
           {{ task.total_time|format_time }}
         </div>
         <div class="timer-controls">
-          <button class="btn timer-btn" onclick="startTimer({{ task.id }})">
+          <button
+            id="start-{{task.id}}"
+            class="btn timer-btn start"
+            onclick="startTimer({{ task.id }})"
+          >
             Start
           </button>
-          <button class="btn timer-btn" onclick="pauseTimer({{ task.id }})">
+          <button
+            id="pause-{{task.id}}"
+            class="btn timer-btn pause"
+            onclick="pauseTimer({{ task.id }})"
+          >
             Pause
           </button>
-          <button class="btn timer-btn" onclick="stopTimer({{ task.id }})">
+          <button
+            id="stop-{{ task.id }}"
+            class="btn timer-btn stop"
+            onclick="stopTimer({{ task.id }})"
+          >
             Stop
           </button>
         </div>
@@ -223,6 +250,29 @@
           {% for comment in task.comments %}
           <li id="comment-{{ comment.id }}">
             {{ comment.content }}
+            <form
+              action="{{ url_for('upload_file', task_id=task.id) }}"
+              method="post"
+              enctype="multipart/form-data"
+            >
+              <input type="file" name="file" />
+              <input type="submit" value="Upload" />
+            </form>
+
+            {% if task.file_path %}
+            <div>
+              <h3>Uploaded File:</h3>
+              <a href="{{ url_for('static', filename=task.file_path) }}"
+                >{{ task.file_path }}</a
+              >
+            </div>
+            {% if task.file_path.split('.')[-1] in ['png', 'jpg', 'jpeg', 'gif']
+            %}
+            <img
+              src="{{ url_for('static', filename=task.file_path) }}"
+              alt="Task Image"
+            />
+            {% endif %} {% endif %}
             <button type="button" onclick="editComment({{ comment.id }})">
               Edit
             </button>
