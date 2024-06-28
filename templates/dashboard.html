@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <title>Dashboard</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="sidebar">
+        <a href="{{ url_for('index') }}" class="btn">Home</a>
+        <a href="{{ url_for('logout') }}" class="btn">Logout</a>
+        <button id="add-project-btn" class="btn">Add Project</button>
+        <div id="project-list" class="project-list">
+          {% for project in projects %}
+          <div class="project-item">
+            <div class="project-list-item" data-project-id="{{ project.id }}">
+              <h3>{{ project.name }}</h3>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="main-content">
+        <h1>Dashboard</h1>
+        <div id="current-project" class="current-project">
+          <!-- Current project tasks will be displayed here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Project Form Modal -->
+    <div id="project-form-modal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <form
+          id="project-form"
+          class="form"
+          method="POST"
+          action="{{ url_for('add_project') }}"
+        >
+          <label for="project-name">Project Name:</label>
+          <input type="text" id="project-name" name="project-name" required />
+          <label for="project-description">Project Description:</label>
+          <textarea
+            id="project-description"
+            name="project-description"
+          ></textarea>
+          <button type="submit" class="btn">Add Project</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Task Form Modal -->
+    <div id="task-form-modal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn" id="task-close-btn">&times;</span>
+        <form
+          id="task-form"
+          class="form"
+          method="POST"
+          action="{{ url_for('add_task') }}"
+        >
+          <label for="task-name">Task Name:</label>
+          <input type="text" id="task-name" name="task-name" required />
+          <label for="task-description">Task Description:</label>
+          <textarea id="task-description" name="task-description"></textarea>
+          <label for="project-id">Project ID:</label>
+          <input type="number" id="project-id" name="project-id" required />
+          <button type="submit" class="btn">Add Task</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+  </body>
+</html>
