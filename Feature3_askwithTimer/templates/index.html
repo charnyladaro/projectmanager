@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Task Manager</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <script
+      src="{{ url_for('static', filename='js/scripts.js') }}"
+      defer
+    ></script>
+  </head>
+  <body>
+    <h1>Task Manager</h1>
+    <form action="/add_task" method="post">
+      <input type="text" name="title" placeholder="Task title" required />
+      <textarea name="description" placeholder="Task description"></textarea>
+      <input type="date" name="due_date" />
+      <button type="submit">Add Task</button>
+    </form>
+    <ul>
+      {% for task in tasks %}
+      <li class="task-item" id="task-{{ task[0] }}">
+        <h2>{{ task[1] }}</h2>
+        <p>{{ task[2] }}</p>
+        <p>Due: {{ task[3] }}</p>
+        <p>Completed: {{ task[4] }}</p>
+        <p>
+          Time Spent: <span id="time-spent-{{ task[0] }}">{{ task[5] }}</span>
+        </p>
+        <p>
+          Running Timer: <span id="running-timer-{{ task[0] }}">00:00:00</span>
+        </p>
+        <p>Hold Time: <span id="hold-time-{{ task[0] }}">00:00:00</span></p>
+        <button
+          class="start-timer"
+          data-task-id="{{ task[0] }}"
+          data-timer-running="false"
+        >
+          Start Timer
+        </button>
+        <button class="stop-timer" data-task-id="{{ task[0] }}">
+          Stop Timer
+        </button>
+        <button
+          class="hold-timer"
+          data-task-id="{{ task[0] }}"
+          data-timer-hold="false"
+          data-hold-time="0"
+        >
+          Hold Timer
+        </button>
+      </li>
+      {% endfor %}
+    </ul>
+  </body>
+</html>

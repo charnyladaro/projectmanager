@@ -1,194 +1,187 @@
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  height: 100vh;
-  overflow: hidden;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
 }
 
 .container {
-  display: flex;
-  width: 100%;
-  height: 100%;
+    display: flex;
+    width: 100%;
+    height: 100%;
 }
 
 .sidebar {
-  width: 250px;
-  background-color: #333;
-  color: #fff;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+    width: 250px;
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .sidebar .btn {
-  margin: 10px 0;
-  width: 100%;
+    margin: 10px 0;
+    width: 100%;
 }
 
 .project-list {
-  margin-top: 20px;
-  width: 100%;
+    margin-top: 20px;
+    width: 100%;
 }
 
 .project-list-item {
-  background: #59c75f;
-  padding: 10px;
-  border-radius: 5px;
-  margin: 10px 0;
-  cursor: pointer;
-  transition: background-color 0.3s;
+    background: #444;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px 0;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
 
 .project-list-item:hover {
-  background-color: #8ce089;
+    background-color: #555;
 }
 
 .main-content {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
 }
 
-h1,
-h3 {
-  color: #333;
+h1, h3 {
+    color: #333;
 }
 
 .board {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  margin: 20px 0;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin: 20px 0;
 }
 
 .column {
-  width: 22%;
-  background: #f1f1f1;
-  padding: 10px;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 22%;
+    background: #f1f1f1;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .column h3 {
-  margin-top: 0;
+    margin-top: 0;
 }
 
 .task {
-  background: #272727;
-  height: 100px;
-  padding: 10px;
-  margin: 10px 0;
-  border-radius: 5px;
-  cursor: grab;
-  color: #fff;
+    background: #272727;
+    height: 100px;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    cursor: grab;
+    color: #fff;
 }
 
 .task:active {
-  cursor: grabbing;
+    cursor: grabbing;
 }
 
 .timer-btn {
-  margin-left: 10px;
+    margin-left: 10px;
 }
 
 .timer-controls {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .timer-display {
-  margin-top: 5px;
-  color: #fff;
-  font-size: 14px;
+    margin-top: 5px;
+    color: #fff;
+    font-size: 14px;
 }
 
 .modal {
-  display: none;
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgb(0, 0, 0);
-  background-color: rgba(0, 0, 0, 0.4);
-  padding-top: 60px;
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+    padding-top: 60px;
 }
 
 .modal-content {
-  background-color: #fefefe;
-  margin: 5% auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
-  max-width: 500px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .close-btn {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
 }
 
 .close-btn:hover,
 .close-btn:focus {
-  color: black;
-  text-decoration: none;
-  cursor: pointer;
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 .current-project {
-  margin-top: 20px;
-  width: 100%;
+    margin-top: 20px;
+    width: 100%;
 }
 
-.form label,
-.task-form label {
-  margin-top: 10px;
-  text-align: left;
-  width: 100%;
+.form label, .task-form label {
+    margin-top: 10px;
+    text-align: left;
+    width: 100%;
 }
 
-.form input,
-.form textarea,
-.task-form input,
-.task-form textarea {
-  width: 100%;
-  padding: 10px;
-  margin-top: 5px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+.form input, .form textarea, .task-form input, .task-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }
 
-.buttons,
-.form,
-.task-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 20px 0;
+.buttons, .form, .task-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px 0;
 }
 
 .btn {
-  display: inline-block;
-  margin: 10px;
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: #fff;
-  text-decoration: none;
-  border-radius: 5px;
-  transition: background-color 0.3s;
+    display: inline-block;
+    margin: 10px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
 }
 
 .btn:hover {
-  background-color: #0056b3;
+    background-color: #0056b3;
 }
