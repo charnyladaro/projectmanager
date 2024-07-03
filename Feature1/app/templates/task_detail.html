@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Detail</title>
+    <!-- Bootstrap CSS CDN link (optional, for styling) -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <a href="{{ url_for('index') }}">Back to Task</a>
+        <h1>Task Detail</h1>
+        <hr>
+        <div>
+            <h3>{{ task.name }}</h3>
+            <p><strong>ID:</strong> {{ task.id }}</p>
+            <p><strong>Status:</strong> {{ task.status }}</p>
+            <!-- Example: Link to update task status using AJAX -->
+            <div id="statusUpdate">
+                <label for="status">Update Status:</label>
+                <select id="status" onchange="updateStatus({{ task.id }})">
+                    <option value="Not started" {% if task.status == 'Not started' %} selected {% endif %}>Not started</option>
+                    <option value="In progress" {% if task.status == 'In progress' %} selected {% endif %}>In progress</option>
+                    <option value="Completed" {% if task.status == 'Completed' %} selected {% endif %}>Completed</option>
+                </select>
+                <div id="statusMessage"></div>
+
+                    {% if task.file_path %}
+                    <div>
+                    <h3>Uploaded File:</h3>
+                    <a href="{{ url_for('static', filename='uploads/' + task.file_path) }}">{{ task.file_path }}</a>
+                    </div>
+                    {% if task.file_path.split('.')[-1] in ['png', 'jpg', 'jpeg', 'gif'] %}
+                    <img src="{{ url_for('static', filename='uploads/' + task.file_path) }}" alt="Task Image" />
+                    {% endif %}
+                    {% endif %}
+
+        </div>
+    </div>
+
+    <!-- jQuery CDN link (optional, for AJAX) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <script>
+        // Example function to update task status using AJAX
+        function updateStatus(taskId) {
+            var newStatus = $('#status').val();
+            $.ajax({
+                type: 'POST',
+                url: '/update_task_status/' + taskId,
+                contentType: 'application/json',
+                data: JSON.stringify({ 'status': newStatus }),
+                success: function(response) {
+                    $('#statusMessage').text('Status updated successfully').removeClass('text-danger').addClass('text-success');
+                    // Update displayed status on the page
+                    $('#taskStatus').text(newStatus);
+                },
+                error: function(error) {
+                    $('#statusMessage').text('Error updating status').removeClass('text-success').addClass('text-danger');
+                    console.error('Error updating status:', error);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

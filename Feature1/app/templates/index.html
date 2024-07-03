@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Project Management</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript">
+      function editProject(projectId) {
+        var content = prompt(
+          "Edit Project:",
+          $("#project-" + projectId).text()
+        );
+        if (content) {
+          $.ajax({
+            url: "/update_project/" + projectId,
+            type: "POST",
+            data: { content: content },
+            success: function (response) {
+              alert("Project updated successfully!");
+              $("#project-" + projectId).text(content);
+            },
+            error: function (error) {
+              console.error("Error updating project:", error);
+            },
+          });
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <h1>Project Management</h1>
+    <a href="{{ url_for('add_project') }}">Add New Project</a>
+    <ul>
+      {% for project in projects %}
+      <li>
+        <a
+          href="{{ url_for('project', project_id=project.id) }}"
+          id="project-{{ project.id }}"
+          >{{ project.name }}</a
+        >
+        <button type="button" onclick="editProject({{ project.id }})">
+          Edit
+        </button>
+        <form
+          method="POST"
+          action="{{ url_for('delete_project', project_id=project.id) }}"
+          style="display: inline"
+        >
+          <button type="submit">Delete</button>
+        </form>
+      </li>
+      {% endfor %}
+    </ul>
+  </body>
+</html>
