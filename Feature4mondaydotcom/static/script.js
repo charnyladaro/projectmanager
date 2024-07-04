@@ -1,5 +1,5 @@
 let currentProjectId = null;
-let timers = {}; // Object to store timers for each task
+let timers = {};
 
 function addProject() {
   const projectName = document.getElementById("project-name").value;
@@ -32,9 +32,9 @@ function loadProjects() {
         const projectDiv = document.createElement("div");
         projectDiv.classList.add("project");
         projectDiv.innerHTML = `
-          <span onclick="showProjectDetails(${project.id})">${project.name}</span>
-          <button class="delete" onclick="deleteProject(${project.id})">Delete</button>
-        `;
+                <span onclick="showProjectDetails(${project.id})">${project.name}</span>
+                <button class="delete" onclick="deleteProject(${project.id})">Delete</button>
+            `;
         projectsContainer.appendChild(projectDiv);
       });
     });
@@ -47,85 +47,73 @@ function showProjectDetails(projectId) {
     .then((data) => {
       const modalTasksContainer = document.getElementById("modal-tasks");
       const projectTitle = document.getElementById("project-title");
+      const fileListContainer = document.querySelector(".file-list ul");
+      const uploadButton = document.getElementById("upload-button");
 
-      projectTitle.textContent = `Project Details (ID: ${projectId})`;
+      projectTitle.textContent = `Project Details`;
       modalTasksContainer.innerHTML = "";
+      fileListContainer.innerHTML = "";
+
+      if (data.tasks.length > 0) {
+        uploadButton.disabled = false;
+      } else {
+        uploadButton.disabled = true;
+      }
 
       data.tasks.forEach((task) => {
         const taskDiv = document.createElement("div");
         taskDiv.classList.add("task");
         taskDiv.innerHTML = `
-          <span>${task.name}</span>
-          <span id="task-timer-${task.id}">${formatTime(task.time_spent)}</span>
-          <div class="task-buttons">
-            <button onclick="startTimer(${task.id})">Start</button>
-            <button onclick="stopTimer(${task.id})">Stop</button>
-            <button class="delete" onclick="deleteTask(${
-              task.id
-            })">Delete</button>
-          </div>
-        `;
-
-        if (task.file_path) {
-          const fileDisplay = document.createElement("div");
-
-          if (isImageFile(task.file_path)) {
-            const img = document.createElement("img");
-            img.src = task.file_path;
-            img.style.maxWidth = "100%";
-            fileDisplay.appendChild(img);
-          } else {
-            const fileIcon = document.createElement("i");
-            fileIcon.classList.add("fas", "fa-file");
-            fileIcon.style.fontSize = "24px";
-            fileDisplay.appendChild(fileIcon);
-          }
-
-          taskDiv.appendChild(fileDisplay);
-        }
-
+                <span>${task.name}</span>
+                <span id="task-timer-${task.id}">${task.time_spent} seconds</span>
+                <div class="task-buttons">
+                    <button onclick="startTimer(${task.id})">Start</button>
+                    <button onclick="stopTimer(${task.id})">Stop</button>
+                    <button class="delete" onclick="deleteTask(${task.id})">Delete</button>
+                </div>
+            `;
         modalTasksContainer.appendChild(taskDiv);
+
+        task.files.forEach((file) => {
+          const fileListItem = document.createElement("li");
+          fileListItem.innerHTML = `
+                    <a href="/uploads/${file.file_path}" download>${file.file_path}</a>
+                    <input type="button" value="Edit" class="Edit" onclick="editFileName(${file.id})"></input>
+                    <a href="/uploads/${file.file_path}" download><button>Download</button></a>
+                    <input type="button" value="Delete" class="delete" onclick="deleteFile(${file.id})"></input>
+                `;
+          fileListContainer.appendChild(fileListItem);
+        });
       });
 
       document.getElementById("project-modal").style.display = "block";
     });
 }
-
-function isImageFile(filePath) {
-  return /\.(jpeg|jpg|png|gif)$/i.test(filePath);
-}
-
 function addTaskToProject() {
   const taskName = document.getElementById("task-name").value;
-  const formData = new FormData();
-  formData.append("name", taskName);
-  formData.append("project_id", currentProjectId);
-
-  fetch("/add_task_to_project", {
+  fetch(`/add_task_to_project`, {
     method: "POST",
-    body: formData,
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ name: taskName, project_id: currentProjectId }),
   })
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
         showProjectDetails(currentProjectId);
+      } else {
+        alert(data.message);
       }
     });
-
-  document.getElementById("task-name").value = "";
 }
 
-function uploadFileToProject() {
+function uploadFile() {
   const taskFile = document.getElementById("task-file").files[0];
-
-  if (!taskFile) {
-    alert("Please select a file to upload.");
-    return;
-  }
-
   const formData = new FormData();
-  formData.append("project_id", currentProjectId);
+
   formData.append("file", taskFile);
+  formData.append("project_id", currentProjectId);
 
   fetch("/upload_file_to_project", {
     method: "POST",
@@ -143,28 +131,22 @@ function uploadFileToProject() {
 
 function startTimer(taskId) {
   if (!timers[taskId]) {
-    let seconds = 0;
-    const taskTimerElement = document.getElementById(`task-timer-${taskId}`);
-    if (taskTimerElement) {
-      const currentSeconds = parseInt(
-        taskTimerElement.textContent
-          .split(":")
-          .reduce((acc, time) => 60 * acc + +time)
-      );
-      seconds = isNaN(currentSeconds) ? 0 : currentSeconds;
-    }
+    let seconds = parseInt(
+      document.getElementById(`task-timer-${taskId}`).innerText.split(" ")[0]
+    );
     timers[taskId] = setInterval(() => {
       seconds++;
-      updateTimerDisplay(taskId, seconds);
-    }, 1000); // Update every second (1000 milliseconds)
+      document.getElementById(
+        `task-timer-${taskId}`
+      ).innerText = `${seconds} seconds`;
+    }, 1000);
   }
 }
 
 function stopTimer(taskId) {
   if (timers[taskId]) {
     clearInterval(timers[taskId]);
-    timers[taskId] = null;
-    // Update task time spent in the database (optional)
+    delete timers[taskId];
     updateTaskTimeSpent(taskId);
   }
 }
@@ -172,9 +154,7 @@ function stopTimer(taskId) {
 function updateTaskTimeSpent(taskId) {
   const taskTimerElement = document.getElementById(`task-timer-${taskId}`);
   if (taskTimerElement) {
-    const currentSeconds = taskTimerElement.textContent
-      .split(":")
-      .reduce((acc, time) => 60 * acc + +time);
+    const currentSeconds = parseInt(taskTimerElement.textContent.split(" ")[0]);
     fetch(`/update_task_time`, {
       method: "POST",
       headers: {
@@ -203,6 +183,9 @@ function deleteProject(projectId) {
     .then((data) => {
       if (data.success) {
         loadProjects();
+        closeModal();
+      } else {
+        alert(data.message); // Show the error message if deletion is not allowed
       }
     });
 }
@@ -219,30 +202,48 @@ function deleteTask(taskId) {
     .then((data) => {
       if (data.success) {
         showProjectDetails(currentProjectId);
+      } else {
+        alert(data.message); // Show the error message if deletion is not allowed
       }
     });
 }
 
+function deleteFile(fileId) {
+  fetch(`/delete_file`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ id: fileId }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        showProjectDetails(currentProjectId); // Refresh the modal to update the file list
+      } else {
+        alert(data.message); // Show the error message if deletion is not allowed
+      }
+    });
+}
+function editFileName(fileId) {
+  fetch(`/edit_file_name`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ id: fileId }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        showProjectDetails(currentProjectId); // Refresh the modal to update the file list
+      } else {
+        alert(data.message); // Show the error message if deletion is not allowed
+      }
+    });
+}
 function closeModal() {
   document.getElementById("project-modal").style.display = "none";
-}
-
-function formatTime(seconds) {
-  const hours = Math.floor(seconds / 3600)
-    .toString()
-    .padStart(2, "0");
-  const minutes = Math.floor((seconds % 3600) / 60)
-    .toString()
-    .padStart(2, "0");
-  const secs = (seconds % 60).toString().padStart(2, "0");
-  return `${hours}:${minutes}:${secs}`;
-}
-
-function updateTimerDisplay(taskId, seconds) {
-  const taskTimerElement = document.getElementById(`task-timer-${taskId}`);
-  if (taskTimerElement) {
-    taskTimerElement.textContent = formatTime(seconds);
-  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
