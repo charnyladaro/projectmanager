@@ -1,7 +1,18 @@
-from flask import Flask, request, jsonify, render_template, send_from_directory
+from flask import (
+    Flask,
+    request,
+    jsonify,
+    render_template,
+    send_from_directory,
+    flash,
+    redirect,
+    url_for,
+    session,
+)
 import sqlite3
 import os
 from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 app = Flask(__name__)
@@ -9,6 +20,7 @@ app = Flask(__name__)
 DATABASE = "database.db"
 UPLOAD_FOLDER = "uploads"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+app.secret_key = "test123"
 
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
@@ -24,6 +36,16 @@ def init_db():
     with get_db_connection() as conn:
         cursor = conn.cursor()
 
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT NOT NULL UNIQUE,
+                password TEXT NOT NULL,
+                role TEXT NOT NULL DEFAULT 'User'
+            )
+            """
+        )
         cursor.execute(
             """
         CREATE TABLE IF NOT EXISTS projects (
@@ -59,13 +81,68 @@ def init_db():
         conn.commit()
 
 
-# Call init_db to initialize the database
-init_db()
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        role = request.form["role"]
+        hashed_password = generate_password_hash(password, method="pbkdf2:sha256")
+
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
+                (username, hashed_password, role),
+            )
+            conn.commit()
+
+        flash("You have successfully registered! You can now log in.", "success")
+        return redirect(url_for("login"))
+
+    return render_template("register.html")
 
 
+# User login route
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
+            user = cursor.fetchone()
+
+            if user and check_password_hash(user["password"], password):
+                session["user_id"] = user["id"]
+                session["username"] = user["username"]
+                session["role"] = user["role"]
+                flash("You have successfully logged in!", "success")
+                return redirect(url_for("index"))
+            else:
+                flash("Login failed. Check your username and/or password.", "danger")
+
+    return render_template("login.html")
+
+
+# User logout route
+@app.route("/logout")
+def logout():
+    session.clear()
+    flash("You have been logged out.", "success")
+    return redirect(url_for("login"))
+
+
+# Modify your index route to check for logged-in user
 @app.route("/")
 def index():
-    return render_template("index.html")
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    return render_template(
+        "index.html", username=session.get("username"), role=session.get("role")
+    )
 
 
 @app.route("/add_project", methods=["POST"])
@@ -287,6 +364,9 @@ def update_task_time():
 
     return jsonify({"success": True})
 
+
+# Call init_db to initialize the database
+init_db()
 
 if __name__ == "__main__":
     if not os.path.exists(app.config["UPLOAD_FOLDER"]):

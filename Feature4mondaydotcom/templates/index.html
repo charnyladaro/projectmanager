@@ -9,6 +9,16 @@
   <body>
     <div id="app">
       <h1>Simple Project Manager</h1>
+      {% if username %}
+      <p>
+        Welcome, {{ username }}! <a href="{{ url_for('logout') }}">Logout</a>
+      </p>
+      {% else %}
+      <p>
+        <a href="{{ url_for('login') }}">Login</a> |
+        <a href="{{ url_for('register') }}">Register</a>
+      </p>
+      {% endif %}
       <div id="project-form">
         <input type="text" id="project-name" placeholder="Project Name" />
         <button onclick="addProject()">Add Project</button>
