@@ -1,114 +1,128 @@
-{% extends "base.html" %}
-{% block content %}
+{% extends "base.html" %} {% block content %}
 
 <h1>User Dashboard</h1>
 
 <h2>Your Assigned Projects</h2>
 <ul>
-{% for project in projects %}
-    <li>{{ project.name }} - {{ project.description }}</li>
-{% endfor %}
+  {% for project in projects %}
+  <li>{{ project.name }} - {{ project.description }}</li>
+  {% endfor %}
 </ul>
 
 <h2>Your Assigned Tasks</h2>
 <ul>
-{% for task in tasks %}
-    <li>
-        <h3>{{ task.title }} - {{ task.status }}</h3>
-        <p>{{ task.description }}</p>
-        <p>Due date: {{ task.due_date.strftime('%Y-%m-%d') }}</p>
-        
-        <div class="time-tracker">
-            <span class="timer" task-id="{{ task.id }}">00:00:00</span>
-            <button class="start-timer" data-task-id="{{ task.id }}">Start</button>
-            <button class="stop-timer" data-task-id="{{ task.id }}" style="display:none;">Stop</button>
-        </div>
-        
-        {% if task.files %}
-        <h4>Uploaded Files:</h4>
-        <div class="uploaded-files">
-            {% for file in task.files %}
-            <div class="uploaded-file">
-                {% if file.file_type == 'image' %}
-                    <img src="{{ url_for('serve_file', file_id=file.id) }}" alt="Uploaded image" class="uploaded-image">
-                {% endif %}
-                <a href="{{ url_for('download_file', file_id=file.id) }}">{{ file.filename }}</a>
-            </div>
-            {% endfor %}
-        </div>
+  {% for task in tasks %}
+  <li>
+    <h3>{{ task.title }} - {{ task.status }}</h3>
+    <p>{{ task.description }}</p>
+    <p>Due date: {{ task.due_date.strftime('%Y-%m-%d') }}</p>
+
+    <div class="time-tracker">
+      <span class="timer" task-id="{{ task.id }}">00:00:00</span>
+      <button class="start-timer" data-task-id="{{ task.id }}">Start</button>
+      <button
+        class="stop-timer"
+        data-task-id="{{ task.id }}"
+        style="display: none"
+      >
+        Stop
+      </button>
+    </div>
+
+    {% if task.files %}
+    <h4>Uploaded Files:</h4>
+    <div class="uploaded-files">
+      {% for file in task.files %}
+      <div class="uploaded-file">
+        {% if file.file_type == 'image' %}
+        <img
+          src="{{ url_for('serve_file', file_id=file.id) }}"
+          alt="Uploaded image"
+          class="uploaded-image"
+        />
         {% endif %}
-    </li>
-{% endfor %}
+        <a href="{{ url_for('download_file', file_id=file.id) }}"
+          >{{ file.filename }}</a
+        >
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </li>
+  {% endfor %}
 </ul>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        let timers = {};
-        let intervals = {};
-        let csrfToken = '';
+  document.addEventListener("DOMContentLoaded", function () {
+    let timers = {};
+    let intervals = {};
+    let csrfToken = "";
 
-        // Fetch CSRF token
-        fetch('/get-csrf-token')
-            .then(response => response.json())
-            .then(data => {
-                csrfToken = data.csrf_token;
-            })
-            .catch(error => console.error('Error fetching CSRF token:', error));
+    // Fetch CSRF token
+    fetch("/get-csrf-token")
+      .then((response) => response.json())
+      .then((data) => {
+        csrfToken = data.csrf_token;
+      })
+      .catch((error) => console.error("Error fetching CSRF token:", error));
 
-        function updateTimer(taskId) {
-            let seconds = timers[taskId];
-            let hours = Math.floor(seconds / 3600);
-            let minutes = Math.floor((seconds % 3600) / 60);
-            seconds = seconds % 60;
-            document.querySelector(`.timer[task-id="${taskId}"]`).textContent = 
-                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }
+    function updateTimer(taskId) {
+      let seconds = timers[taskId];
+      let hours = Math.floor(seconds / 3600);
+      let minutes = Math.floor((seconds % 3600) / 60);
+      seconds = seconds % 60;
+      document.querySelector(
+        `.timer[task-id="${taskId}"]`
+      ).textContent = `${hours.toString().padStart(2, "0")}:${minutes
+        .toString()
+        .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+    }
 
-        document.querySelectorAll('.start-timer').forEach(button => {
-            button.addEventListener('click', function() {
-                let taskId = this.getAttribute('data-task-id');
-                if (!timers[taskId]) timers[taskId] = 0;
-                intervals[taskId] = setInterval(() => {
-                    timers[taskId]++;
-                    updateTimer(taskId);
-                }, 1000);
-                this.style.display = 'none';
-                this.nextElementSibling.style.display = 'inline-block';
-            });
-        });
-
-        document.querySelectorAll('.stop-timer').forEach(button => {
-            button.addEventListener('click', function() {
-                let taskId = this.getAttribute('data-task-id');
-                clearInterval(intervals[taskId]);
-                this.style.display = 'none';
-                this.previousElementSibling.style.display = 'inline-block';
-                
-                // Send time spent to server
-                fetch('{{ url_for("track_time") }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': csrfToken
-                    },
-                    body: JSON.stringify({
-                        task_id: taskId,
-                        time_spent: timers[taskId] / 3600  // Convert seconds to hours
-                    }),
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        console.log('Time tracked successfully');
-                    } else {
-                        console.error('Error tracking time');
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                });
-            });
-        });
+    document.querySelectorAll(".start-timer").forEach((button) => {
+      button.addEventListener("click", function () {
+        let taskId = this.getAttribute("data-task-id");
+        if (!timers[taskId]) timers[taskId] = 0;
+        intervals[taskId] = setInterval(() => {
+          timers[taskId]++;
+          updateTimer(taskId);
+        }, 1000);
+        this.style.display = "none";
+        this.nextElementSibling.style.display = "inline-block";
+      });
     });
+
+    document.querySelectorAll(".stop-timer").forEach((button) => {
+      button.addEventListener("click", function () {
+        let taskId = this.getAttribute("data-task-id");
+        clearInterval(intervals[taskId]);
+        this.style.display = "none";
+        this.previousElementSibling.style.display = "inline-block";
+
+        // Send time spent to server
+        fetch('{{ url_for("track_time") }}', {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken,
+          },
+          body: JSON.stringify({
+            task_id: taskId,
+            time_spent: timers[taskId] / 3600, // Convert seconds to hours
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              console.log("Time tracked successfully");
+            } else {
+              console.error("Error tracking time");
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      });
+    });
+  });
 </script>
 {% endblock %}

@@ -1,114 +1,138 @@
 body {
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
-    margin: 0;
-    padding: 0;
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
 }
 
 header {
-    background-color: #333;
-    color: #fff;
-    padding: 1rem;
+  background-color: #333;
+  color: #fff;
+  padding: 1rem;
 }
 
 header h1 {
-    margin: 0;
+  margin: 0;
 }
 
 nav {
-    margin-top: 1rem;
+  margin-top: 1rem;
 }
 
 nav a {
-    color: #fff;
-    text-decoration: none;
-    margin-right: 1rem;
+  color: #fff;
+  text-decoration: none;
+  margin-right: 1rem;
 }
 
 main {
-    padding: 2rem;
+  padding: 2rem;
 }
 
 form {
-    display: flex;
-    flex-direction: column;
-    max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  max-width: 300px;
 }
 
-form input, form textarea, form select, form button {
-    margin-bottom: 1rem;
+form input,
+form textarea,
+form select,
+form button {
+  margin-bottom: 1rem;
 }
 
 ul {
-    list-style-type: none;
-    padding: 0;
+  list-style-type: none;
+  padding: 0;
 }
 
 li {
-    margin-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .flash-messages {
-    list-style-type: none;
-    padding: 0;
+  list-style-type: none;
+  padding: 0;
 }
 
 .flash-message {
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
 }
 
 .flash-message.success {
-    background-color: #d4edda;
-    color: #155724;
+  background-color: #d4edda;
+  color: #155724;
 }
 
 .flash-message.error {
-    background-color: #f8d7da;
-    color: #721c24;
+  background-color: #f8d7da;
+  color: #721c24;
 }
 
 .flash-message.info {
-    background-color: #d1ecf1;
-    color: #0c5460;
+  background-color: #d1ecf1;
+  color: #0c5460;
 }
 /* ... (previous styles) ... */
 
 .uploaded-files {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
 }
 
 .uploaded-file {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    max-width: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 120px;
 }
 
 .uploaded-image {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    margin-bottom: 5px;
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  margin-bottom: 5px;
 }
 
 .document-icon {
-    font-size: 48px;
-    color: #4a4a4a;
-    margin-bottom: 5px;
+  font-size: 48px;
+  color: #4a4a4a;
+  margin-bottom: 5px;
 }
 
 .uploaded-file a {
-    text-align: center;
-    word-break: break-all;
-    margin-bottom: 5px;
+  text-align: center;
+  word-break: break-all;
+  margin-bottom: 5px;
 }
 
 .delete-file {
-    font-size: 12px;
-    padding: 2px 5px;
+  font-size: 12px;
+  padding: 2px 5px;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 500px;
 }

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Tasks - Project Management App</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    </head>
+<body>
+    <header>
+        <h1>Tasks</h1>
+        <nav>
+            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('projects') }}">Projects</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </nav>
+    </header>
+    <main>
+        <h2>Task List</h2>
+        <ul id="task-list">
+            {% for task in tasks %}
+            <li>
+                <h3>{{ task.title }} - {{ task.status }}</h3>
+                <p>{{ task.description }}</p>
+                <p>Assigned to: {{ task.assigned_to }}</p>
+                <p>Due date: {{ task.due_date.strftime('%Y-%m-%d') }}</p>
+                <div class="time-tracker">
+                    <span class="timer" data-task-id="{{ task.id }}">00:00:00</span>
+                    <button class="start-timer" data-task-id="{{ task.id }}">Start</button>
+                    <button class="stop-timer" data-task-id="{{ task.id }}" style="display: none;">Stop</button>
+                </div>
+                <form class="file-upload" action="{{ url_for('upload_file', task_id=task.id) }}" method="post" enctype="multipart/form-data">
+                    <input type="file" name="files[]" multiple required>
+                    <button type="submit">Upload Files</button>
+                </form>
+                {% if task.files %}
+                <div class="uploaded-files">
+                    {% for file in task.files %}
+                    <div class="uploaded-file">
+                        {% if file.file_type == 'image' %}
+                        <img src="{{ url_for('serve_file', file_id=file.id) }}" alt="Uploaded image" class="uploaded-image">
+                        {% else %}
+                        <i class="fas fa-file document-icon"></i>
+                        {% endif %}
+                        <a href="{{ url_for('download_file', file_id=file.id) }}">{{ file.filename }}</a>
+                        <button class="delete-file" data-file-id="{{ file.id }}">Delete File</button>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                </div>
+                <button class="delete-task" data-task-id="{{ task.id }}">Delete Task</button>
+            </li>
+            {% endfor %}
+        </ul>
+        <h2>Add New Task</h2>
+        <form action="{{ url_for('tasks') }}" method="post">
+            <select name="project_id" required>
+                {% for project in projects %}
+                <option value="{{ project.id }}">{{ project.name }}</option>
+                {% endfor %}
+            </select>
+            <input type="text" name="title" placeholder="Task Title" required>
+            <textarea name="description" placeholder="Task Description"></textarea>
+            <select name="status">
+                <option value="To Do">To Do</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Done">Done</option>
+            </select>
+            <input type="text" name="assigned_to" placeholder="Assigned To">
+            <input type="date" name="due_date">
+            <button type="submit">Add Task</button>
+        </form>
+    </main>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

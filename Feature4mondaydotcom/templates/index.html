@@ -1,29 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Project Management App</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
     <header>
-        <nav>                      
-            {% if current_user.is_authenticated %}
-            <a href="{{ url_for('dashboard') }}">Dashboard</a>  
-            <a href="{{ url_for('projects') }}">Projects</a>
-            <a href="{{ url_for('tasks') }}">Tasks</a>
-            <a href="{{ url_for('logout') }}">Logout</a>
-            {% else %}
-            <a href="{{ url_for('dashboard') }}">Home</a>
-            <a href="{{ url_for('login') }}">Login</a>
-            {% endif %}
-        </nav>
+      <nav>
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('projects') }}">Projects</a>
+        <a href="{{ url_for('tasks') }}">Tasks</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+        {% else %}
+        <a href="{{ url_for('dashboard') }}">Home</a>
+        <a href="{{ url_for('login') }}">Login</a>
+        {% endif %}
+      </nav>
     </header>
     <main>
-        <h2>Welcome to the Project Management App</h2>
-        <p>This app helps you manage projects, tasks, and collaborate with your team.</p>
+      <h2>Welcome to the Project Management App</h2>
+      <p>
+        This app helps you manage projects, tasks, and collaborate with your
+        team.
+      </p>
     </main>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
-</body>
+  </body>
 </html>
