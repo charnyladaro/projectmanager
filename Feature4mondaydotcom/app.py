@@ -36,6 +36,9 @@ from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
 from sqlalchemy.orm import relationship, declarative_base
 from email_validator import validate_email, EmailNotValidError
 import logging
+import uuid
+from flask_wtf.file import FileField, FileAllowed
+
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 Base = declarative_base()
@@ -54,6 +57,10 @@ app.config["MAIL_PASSWORD"] = "testPass1"  # Change this to your email password
 app.config["MAIL_DEFAULT_SENDER"] = "tmvaptest8@gmail.com"  # Change this to your email
 app.config["UPLOAD_FOLDER"] = "uploads"
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16MB max-limit
+app.config["PROFILE_PICS"] = os.path.join(basedir, "static", "profile_pics")
+
+os.makedirs(app.config["PROFILE_PICS"], exist_ok=True)
+
 csrf = CSRFProtect(app)
 db = SQLAlchemy(model_class=declarative_base())
 login_manager = LoginManager(app)
@@ -77,6 +84,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(200), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
+    profile_picture = db.Column(db.String(255), default="default.jpg")  # Add this line
     assigned_tasks = db.relationship(
         "Task", secondary=task_assignments, back_populates="assigned_users"
     )
@@ -129,6 +137,9 @@ class RegistrationForm(FlaskForm):
     password = PasswordField("Password", validators=[DataRequired()])
     confirm_password = PasswordField(
         "Confirm Password", validators=[DataRequired(), EqualTo("password")]
+    )
+    profile_picture = FileField(
+        "Profile Picture", validators=[FileAllowed(["jpg", "png", "jpeg", "gif"])]
     )
     submit = SubmitField("Sign Up")
 
@@ -207,6 +218,60 @@ def create_admin_user():
         db.session.commit()
 
 
+@app.route("/profile/<int:user_id>", methods=["GET", "POST"])
+@login_required
+def user_profile(user_id):
+    user = User.query.get_or_404(user_id)
+    if request.method == "POST":
+        if current_user.is_admin or current_user.id == user.id:
+            user.username = request.form["username"]
+            user.email = request.form["email"]
+            if "password" in request.form and request.form["password"]:
+                user.password = generate_password_hash(request.form["password"])
+
+            # Handle profile picture upload
+            if "profile_picture" in request.files:
+                file = request.files["profile_picture"]
+                if file and allowed_file(file.filename):
+                    filename = secure_filename(file.filename)
+                    # Use UUID to ensure unique filenames
+                    unique_filename = f"{uuid.uuid4()}_{filename}"
+                    file_path = os.path.join(
+                        app.config["PROFILE_PICS"], unique_filename
+                    )
+                    file.save(file_path)
+                    # Delete old profile picture if it's not the default
+                    if user.profile_picture != "default.jpg":
+                        old_file = os.path.join(
+                            app.config["PROFILE_PICS"], user.profile_picture
+                        )
+                        if os.path.exists(old_file):
+                            os.remove(old_file)
+                    user.profile_picture = unique_filename
+
+            db.session.commit()
+            flash("Profile updated successfully", "success")
+            return redirect(url_for("user_profile", user_id=user.id))
+        else:
+            flash("You do not have permission to edit this profile", "error")
+    return render_template("user_profile.html", user=user)
+
+
+# Add this function to check allowed file types
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in {
+        "png",
+        "jpg",
+        "jpeg",
+        "gif",
+    }
+
+
+@app.template_filter("profile_pic_url")
+def profile_pic_url_filter(user):
+    return url_for("static", filename=f"profile_pics/{user.profile_picture}")
+
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     form = RegistrationForm()
@@ -215,6 +280,17 @@ def register():
         new_user = User(
             username=form.username.data, email=form.email.data, password=hashed_password
         )
+
+        if form.profile_picture.data:
+            file = form.profile_picture.data
+            filename = secure_filename(file.filename)
+            unique_filename = f"{uuid.uuid4()}_{filename}"
+            file_path = os.path.join(app.config["PROFILE_PICS"], unique_filename)
+            file.save(file_path)
+            new_user.profile_picture = unique_filename
+        else:
+            new_user.profile_picture = "default.jpg"
+
         db.session.add(new_user)
         db.session.commit()
         flash("Your account has been created! You are now able to log in", "success")

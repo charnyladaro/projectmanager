@@ -1,0 +1,51 @@
+{% extends "base.html" %} {% block content %}
+<h1>User Profile: {{ user.username }}</h1>
+
+<img
+  src="{{ url_for('static', filename='profile_pics/' + user.profile_picture) }}"
+  alt="Profile Picture"
+  style="width: 200px; height: 200px; object-fit: cover"
+/>
+
+{% if current_user.is_admin or current_user.id == user.id %}
+<form method="POST" enctype="multipart/form-data">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+  <div>
+    <label for="username">Username:</label>
+    <input
+      type="text"
+      id="username"
+      name="username"
+      value="{{ user.username }}"
+      required
+    />
+  </div>
+  <div>
+    <label for="email">Email:</label>
+    <input
+      type="email"
+      id="email"
+      name="email"
+      value="{{ user.email }}"
+      required
+    />
+  </div>
+  <div>
+    <label for="password">New Password (leave blank to keep current):</label>
+    <input type="password" id="password" name="password" />
+  </div>
+  <div>
+    <label for="profile_picture">Profile Picture:</label>
+    <input
+      type="file"
+      id="profile_picture"
+      name="profile_picture"
+      accept="image/*"
+    />
+  </div>
+  <button type="submit">Update Profile</button>
+</form>
+{% else %}
+<p>Username: {{ user.username }}</p>
+<p>Email: {{ user.email }}</p>
+{% endif %} {% endblock %}

@@ -1,7 +1,16 @@
 {% extends "base.html" %} {% block content %}
 
 <h1>User Dashboard</h1>
-
+<img
+  src="{{ current_user|profile_pic_url }}"
+  alt="Your profile picture"
+  style="width: 100px; height: 100px; object-fit: cover"
+/>
+<p>
+  <a href="{{ url_for('user_profile', user_id=current_user.id) }}"
+    >View/Edit Your Profile</a
+  >
+</p>
 <h2>Your Assigned Projects</h2>
 <ul>
   {% for project in projects %}
