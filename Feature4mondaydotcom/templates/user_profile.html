@@ -9,7 +9,17 @@
       alt="{{ user.username }}'s profile picture"
     />
   </div>
+  <h1>{{ user.username }}'s Profile</h1>
+  <p>
+    Status: {% if user.is_active %}<span class="active-status">Active</span>{%
+    else %}<span class="inactive-status">Inactive</span>{% endif %}
+  </p>
 
+  {% if current_user.id == user.id %}
+  <button id="toggle-active-status" data-active="{{ user.is_active }}">
+    {% if user.is_active %}Set Inactive{% else %}Set Active{% endif %}
+  </button>
+  {% endif %}
   <div class="user-info">
     <p><strong>Username:</strong> {{ user.username }}</p>
     <p><strong>Email:</strong> {{ user.email }}</p>

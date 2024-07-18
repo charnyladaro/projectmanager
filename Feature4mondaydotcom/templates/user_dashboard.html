@@ -12,22 +12,16 @@
   >
 </p>
 
-  <h2>Users</h2>
-  <ul class="user-list">
-    {% for user in users %}
-    <li>
-      <img
-        src="{{ user|profile_pic_url }}"
-        alt="{{ user.username }}'s profile picture"
-        class="profile-pic"
-      />
-      <a href="{{ url_for('user_profile', user_id=user.id) }}"
-        >{{ user.username }}</a
-      >
-      ({{ user.email }})
-    </li>
-    {% endfor %}
-  </ul>
+<h2>Active Users</h2>
+{% for user in active_users %}
+<div class="user-item">
+    <img src="{{ user|profile_pic_url }}" alt="{{ user.username }}'s profile picture" class="profile-pic">
+    <a href="{{ url_for('user_profile', user_id=user.id) }}">{{ user.username }}</a>
+    {% if user.id != current_user.id %}
+    <a href="{{ url_for('chat', user_id=user.id) }}" class="btn btn-primary btn-sm">Chat</a>
+    {% endif %}
+</div>
+{% endfor %}
 </div>
 <h2>Your Assigned Projects</h2>
 <ul>

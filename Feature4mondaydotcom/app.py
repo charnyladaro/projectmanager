@@ -124,6 +124,7 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(200), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
     profile_picture = db.Column(db.String(255), default="default.jpg")
+    is_active = db.Column(db.Boolean, default=False)
     assigned_tasks = db.relationship(
         "Task", secondary=task_assignments, back_populates="assigned_users"
     )
@@ -268,6 +269,15 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
+@app.route("/update_active_status", methods=["POST"])
+@login_required
+def update_active_status():
+    active = request.form.get("active") == "true"
+    current_user.is_active = active
+    db.session.commit()
+    return jsonify({"success": True})
+
+
 @app.route("/get-csrf-token", methods=["GET"])
 def get_csrf_token():
     return jsonify({"csrf_token": generate_csrf()})
@@ -301,6 +311,13 @@ ALLOWED_EXTENSIONS = {
 # Function to check if the file extension is allowed
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+with app.app_context():
+    users = User.query.all()
+    for user in users:
+        user.is_active = True  # or False, depending on your preference
+    db.session.commit()
 
 
 def admin_required(f):
@@ -615,12 +632,16 @@ def user_dashboard():
         .distinct()
         .all()
     )
+    active_users = User.query.filter(
+        User.is_active == True, User.id != current_user.id
+    ).all()
 
     return render_template(
         "user_dashboard.html",
         user=current_user,
         tasks=user_tasks,
         projects=user_projects,
+        active_users=active_users,
     )
 
 
@@ -997,6 +1018,10 @@ def handle_chat_request(request_id, action):
 @login_required
 def chat(user_id):
     other_user = User.query.get_or_404(user_id)
+    if not other_user.is_active:
+        flash("You can only chat with active users.", "error")
+        return redirect(url_for("user_profile", user_id=user_id))
+    other_user = User.query.get_or_404(user_id)
     if other_user not in current_user.friends:
         flash("You can only chat with friends.", "error")
         return redirect(url_for("user_profile", user_id=user_id))
@@ -1029,6 +1054,11 @@ def chat(user_id):
 @app.route("/send_message/<int:receiver_id>", methods=["POST"])
 @login_required
 def send_message(receiver_id):
+    receiver = User.query.get_or_404(receiver_id)
+    if not receiver.is_active:
+        flash("You can only send messages to active users.", "error")
+        return redirect(url_for("user_profile", user_id=receiver_id))
+
     content = request.form.get("content")
     if content:
         new_message = Message(
