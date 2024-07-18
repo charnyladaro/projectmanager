@@ -11,6 +11,24 @@
     >View/Edit Your Profile</a
   >
 </p>
+
+  <h2>Users</h2>
+  <ul class="user-list">
+    {% for user in users %}
+    <li>
+      <img
+        src="{{ user|profile_pic_url }}"
+        alt="{{ user.username }}'s profile picture"
+        class="profile-pic"
+      />
+      <a href="{{ url_for('user_profile', user_id=user.id) }}"
+        >{{ user.username }}</a
+      >
+      ({{ user.email }})
+    </li>
+    {% endfor %}
+  </ul>
+</div>
 <h2>Your Assigned Projects</h2>
 <ul>
   {% for project in projects %}

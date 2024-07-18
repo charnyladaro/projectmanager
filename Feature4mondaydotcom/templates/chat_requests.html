@@ -1,0 +1,21 @@
+{% extends "base.html" %} {% block content %}
+<h2>Chat Requests</h2>
+{% if requests %}
+<ul>
+  {% for request in requests %}
+  <li>
+    {{ request.sender.username }} wants to chat with you
+    <a
+      href="{{ url_for('handle_chat_request', request_id=request.id, action='accept') }}"
+      >Accept</a
+    >
+    <a
+      href="{{ url_for('handle_chat_request', request_id=request.id, action='reject') }}"
+      >Reject</a
+    >
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>No pending chat requests.</p>
+{% endif %} {% endblock %}
