@@ -32,9 +32,8 @@ body {
 }
 
 .main-content {
-  margin-left: 250px; /* Same width as the sidebar */
-  padding: 2em;
-  flex-grow: 1;
+  width: 100%;
+  border: 2px solid rgb(0, 0, 0);
 }
 
 .navbar {
@@ -91,12 +90,16 @@ body {
   margin: 1em 0;
 }
 
-.profile-pic {
+.profile-pic, .account-img{
   width: 50px;
   height: 50px;
   border-radius: 50%;
   object-fit: cover;
   margin-right: 1em;
+}
+.account-img{
+  width: 100px;
+  height: 100px;
 }
 
 .form-section {
@@ -200,9 +203,25 @@ select.input-field {
   margin: 15% auto;
   padding: 2em;
   border: 1px solid #888;
-  width: 80%;
-  max-width: 500px;
+  width: 100%;
+  max-width: 1200px;
   border-radius: 8px;
+}
+.close {
+  position: absolute;
+  top: 15px;
+  right: 35px;
+  color: #f1f1f1;
+  font-size: 40px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.close:hover,
+.close:focus {
+  color: #bbb;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 @media (max-width: 768px) {

@@ -267,3 +267,15 @@ document.getElementById("profile_picture").onchange = function (evt) {
     fr.readAsDataURL(files[0]);
   }
 };
+
+
+var csrftoken = document.querySelector('meta[name=csrf-token]').getAttribute('content')
+
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken)
+        }
+    }
+})
+
