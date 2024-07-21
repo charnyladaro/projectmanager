@@ -40,44 +40,15 @@
       <div>{{ form.submit }}</div>
     </form>
   </div>
-  {% endif %} {% if current_user.is_authenticated and current_user.id != user.id
-  %}
-  <div class="request-buttons">
-    {% if can_send_friend_request %}
-    <form
-      action="{{ url_for('send_request', receiver_id=user.id, request_type='friend') }}"
-      method="POST"
-    >
-      {{ form.csrf_token }}
+  {% endif %} 
+  {% if can_chat %}
+  <a href="{{ url_for('chat', user_id=user.id) }}" class="btn btn-primary">Chat</a>
+{% elif can_send_friend_request %}
+  <form action="{{ url_for('send_request', receiver_id=user.id, request_type='friend') }}" method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <button type="submit" class="btn btn-primary">Send Friend Request</button>
-    </form>
-    {% endif %} {% if can_send_chat_request %}
-    <form
-      action="{{ url_for('send_request', receiver_id=user.id, request_type='chat') }}"
-      method="POST"
-    >
-      {{ form.csrf_token }}
-      <button type="submit" class="btn btn-primary">Send Chat Request</button>
-    </form>
-    {% endif %}
-  </div>
-  {% endif %} {% if current_user.is_authenticated and user in
-  current_user.friends %}
-  <div class="friend-status">
-    <p>You are friends with {{ user.username }}</p>
-    <a href="{{ url_for('chat', user_id=user.id) }}" class="btn btn-info"
-      >Start Chat</a
-    >
-  </div>
-  {% endif %} {% if current_user.is_authenticated and user in
-  current_user.friends %}
-  <div class="friend-status">
-    <p>You are friends with {{ user.username }}</p>
-    <a href="{{ url_for('chat', user_id=user.id) }}" class="btn btn-info"
-      >Start Chat</a
-    >
-  </div>
-  {% endif %}
+  </form>
+{% endif %}
 
   <div class="user-activity">
     <h2>Recent Activity</h2>

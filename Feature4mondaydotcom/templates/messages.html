@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Messages</h2>
+
+<h3>Your Friends</h3>
+{% if friends %}
+    <ul>
+    {% for friend in friends %}
+        <li>
+            {{ friend.username }}
+            <a href="{{ url_for('chat', user_id=friend.id) }}">Start Chat</a>
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>You don't have any friends yet.</p>
+{% endif %}
+
+<h3>Pending Requests</h3>
+{% if requests %}
+    <ul>
+    {% for request in requests %}
+        <li>
+            {{ request.sender.username }} wants to {{ request.request_type }} with you
+            <a href="{{ url_for('handle_request', request_id=request.id, action='accept') }}">Accept</a>
+            <a href="{{ url_for('handle_request', request_id=request.id, action='reject') }}">Reject</a>
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No pending requests.</p>
+{% endif %}
+{% endblock %}
+

@@ -1,45 +1,86 @@
-{% extends "base.html" %} {% block content %}
-<h1>Register</h1>
-<form method="POST" enctype="multipart/form-data">
-  {{ form.hidden_tag() }}
-  <div>
-    {{ form.username.label }} {{ form.username }} {% for error in
-    form.username.errors %}
-    <span style="color: red">{{ error }}</span>
-    {% endfor %}
-  </div>
-  <div>
-    {{ form.email.label }} {{ form.email }} {% for error in form.email.errors %}
-    <span style="color: red">{{ error }}</span>
-    {% endfor %}
-  </div>
-  <div>
-    {{ form.password.label }} {{ form.password }} {% for error in
-    form.password.errors %}
-    <span style="color: red">{{ error }}</span>
-    {% endfor %}
-  </div>
-  <div>
-    {{ form.confirm_password.label }} {{ form.confirm_password }} {% for error
-    in form.confirm_password.errors %}
-    <span style="color: red">{{ error }}</span>
-    {% endfor %}
-  </div>
-  <div>
-    {{ form.profile_picture.label }} {{ form.profile_picture }} {% for error in
-    form.profile_picture.errors %}
-    <span style="color: red">{{ error }}</span>
-    {% endfor %}
-  </div>
-  <div>{{ form.submit }}</div>
-</form>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
+    <title>Project Management App</title>
+      <!-- Font Awesome -->
+      <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+      />
+      <!-- Google Fonts -->
+      <link
+      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+      rel="stylesheet"
+      />
+      <!-- MDB -->
+      <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.3.2/mdb.min.css"
+      rel="stylesheet"
+      />
+  <!-- MDB -->
+  </head>
+  <body>
+      <section class="vh-100 gradient-custom">
+        <div class="container py-5 h-100">
+          <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+              <div class="card bg-dark text-white" style="border-radius: 1rem;">
+                <div class="card-body p-5 text-center">
+                  <div>
+                    <img
+                      id="profile-preview"
+                      src="{{ url_for('static', filename='profile_pics/default.jpg') }}"
+                      alt="Profile Picture Preview"
+                      style="width: 200px; height: 200px; object-fit: cover"
+                    />
+                  </div>
+                  <h1>Register</h1>
+                  <form method="POST" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+                    <div>
+                      {{ form.username.label }} {{ form.username }} {% for error in
+                      form.username.errors %}
+                      <span style="color: red">{{ error }}</span>
+                      {% endfor %}
+                    </div>
+                    <div>
+                      {{ form.email.label }} {{ form.email }} {% for error in form.email.errors %}
+                      <span style="color: red">{{ error }}</span>
+                      {% endfor %}
+                    </div>
+                    <div>
+                      {{ form.password.label }} {{ form.password }} {% for error in
+                      form.password.errors %}
+                      <span style="color: red">{{ error }}</span>
+                      {% endfor %}
+                    </div>
+                    <div>
+                      {{ form.confirm_password.label }} {{ form.confirm_password }} {% for error
+                      in form.confirm_password.errors %}
+                      <span style="color: red">{{ error }}</span>
+                      {% endfor %}
+                    </div>
+                    <div>
+                      {{ form.profile_picture.label }} {{ form.profile_picture }} {% for error in
+                      form.profile_picture.errors %}
+                      <span style="color: red">{{ error }}</span>
+                      {% endfor %}
+                    </div>
+                    <div>{{ form.submit }}</div>
+                    <p class="mb-0"><a href="{{ url_for('login') }}" class="text-white-50 fw-bold">Sign in</a>
+                  </form>
 
-<div>
-  <img
-    id="profile-preview"
-    src="{{ url_for('static', filename='profile_pics/default.jpg') }}"
-    alt="Profile Picture Preview"
-    style="width: 200px; height: 200px; object-fit: cover"
-  />
-</div>
-{% endblock %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+  </body>
+</html>
+
+

@@ -1,26 +1,6 @@
 {% extends "base.html" %} {% block content %}
 
 <h1>Admin Dashboard</h1>
-<div class="dashboard-section">
-  <h2>Users</h2>
-  {% for user in users %}
-  <div class="user-item">
-    <img
-      src="{{ user|profile_pic_url }}"
-      alt="{{ user.username }}'s profile picture"
-      class="profile-pic"
-    />
-    <a href="{{ url_for('user_profile', user_id=user.id) }}"
-      >{{ user.username }}</a
-    >
-    ({{ user.email }})
-    <span
-      class="status-indicator {% if user.is_active %}active{% else %}inactive{% endif %}"
-    >
-      {% if user.is_active %}Active{% else %}Inactive{% endif %}
-    </span>
-  </div>
-  {% endfor %}
 
   <div class="dashboard-section">
     <h2>All Projects</h2>

@@ -1,29 +1,82 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %}
+{% block content %}
 
-<div class="chat-container">
-  <h1>Chat with {{ other_user.username }}</h1>
+<h2>{{ other_user.username }}</h2>
 
-  <div class="message-container">
-    {% for message in messages %}
-    <div
-      class="message {% if message.sender_id == current_user.id %}sent{% else %}received{% endif %}"
-    >
-      <strong>{{ message.sender.username }}:</strong> {{ message.content }}
-      <small>{{ message.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+{% for message in messages %}
+    <div class="message {% if message.sender_id == current_user.id %}sent{% else %}received{% endif %}">
+        <strong>{{ message.sender.username }}:</strong> {{ message.content }}
+        <small>{{ message.timestamp.strftime('%I:%M %p') }}</small>
+        {% if message.files %}
+            <div class="file-attachments">
+                {% for file in message.files %}
+                    {% if file.file_type == 'image' %}
+                        <img src="{{ url_for('serve_image', filename=file.filename) }}" class="chat-image" style="max-width: 200px; max-height: 200px; cursor: pointer;">
+                    {% else %}
+                        <a href="{{ url_for('download_file', file_id=file.id) }}">{{ file.filename }}</a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% if message.sender_id == current_user.id %}
+            <form action="{{ url_for('delete_message', message_id=message.id) }}" method="POST" onsubmit="return confirmDelete(event, this);">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+            </form>
+        {% endif %}
     </div>
-    {% endfor %}
-  </div>
-
-  <form method="POST" class="message-form">
-    {{ form.csrf_token }}
-    <input
-      type="text"
-      name="message"
-      placeholder="Type your message..."
-      required
-    />
+{% endfor %}
+</div>
+<form action="{{ url_for('chat', user_id=other_user.id) }}" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <textarea name="message" ></textarea>
+    <input type="file" name="files" multiple>
     <button type="submit">Send</button>
-  </form>
+</form>
+
+<div id="imageModal" class="modal">
+    <span class="close">&times;</span>
+    <img class="modal-content" id="modalImage">
 </div>
 
-{% endblock %}
+
+<script>
+    // Get the modal
+    var modal = document.getElementById("imageModal");
+    
+    // Get the image and insert it inside the modal
+    var modalImg = document.getElementById("modalImage");
+    
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+    
+    // Function to open the modal
+    function openModal(imgSrc) {
+      modal.style.display = "block";
+      modalImg.src = imgSrc;
+    }
+    
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+      modal.style.display = "none";
+    }
+    
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+    
+    // Add click event listeners to all chat images
+    document.addEventListener('DOMContentLoaded', function() {
+      var chatImages = document.querySelectorAll('.chat-image');
+      chatImages.forEach(function(img) {
+        img.addEventListener('click', function() {
+          openModal(this.src);
+        });
+      });
+    });
+</script>
+    
+{% endblock%}
