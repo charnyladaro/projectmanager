@@ -1,0 +1,85 @@
+{% extends "base.html" %} {% block content %}
+
+<h2>Add New Project</h2>
+<button
+  type="button"
+  class="btn btn-primary"
+  data-toggle="modal"
+  data-target="#addProjectModal"
+>
+  Add New Project
+</button>
+
+<!-- Modal for adding a new project -->
+<div
+  class="modal fade"
+  id="addProjectModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="addProjectModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addProjectModalLabel">Add New Project</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" class="form-section addProjectForm">
+          <div class="form-group">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <label for="projectName">Project Name</label>
+            <input
+              type="text"
+              name="project_name"
+              placeholder="Project Name"
+              required
+              class="input-field form-control"
+              id="projectName"
+            />
+          </div>
+          <div class="form-group">
+            <label for="projectDescription">Project Description</label>
+            <textarea
+            name="project_description"
+            placeholder="Project Description"
+            class="input-field form-control"
+            id="projectDescription"
+            required
+          ></textarea>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          Close
+        </button>
+        <button type="submit" name="add_project" class="btn">Add Project</button>
+      </div>
+      </div>
+    </form>
+    </div>
+  </div>
+  </div>
+
+  <div class="dashboard-section">
+    <h2>All Projects</h2>
+    {% for project in projects %}
+    <div class="project-item" data-project-id="{{ project.id }}">
+      <span>{{ project.name }} - {{ project.description }}</span>
+      <button class="btn delete-project" data-project-id="{{ project.id }}">
+        Delete Project
+      </button>
+    </div>
+    {% endfor %}
+  </div>
+
+
+{% endblock %}
