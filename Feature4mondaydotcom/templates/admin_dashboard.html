@@ -2,54 +2,160 @@
 
 <h1>Admin Dashboard</h1>
 
-  <div class="dashboard-section">
-    <h2>All Projects</h2>
-    {% for project in projects %}
-    <div class="project-item" data-project-id="{{ project.id }}">
-      <span>{{ project.name }} - {{ project.description }}</span>
+<div class="dashboard-section">
+  <h2>All Projects</h2>
+  {% for project in projects %}
+  <div class="project-item" data-project-id="{{ project.id }}">
+    <h3>{{ project.name }} - {{ project.description }}</h3>
+    <div class="project-actions">
+      <button class="btn view-tasks-btn" data-project-id="{{ project.id }}">
+        View Tasks
+      </button>
       <button class="btn delete-project" data-project-id="{{ project.id }}">
         Delete Project
       </button>
     </div>
-    {% endfor %}
+    <div class="assigned-users">
+      <h4>Assigned Users:</h4>
+      {% for user in project_users[project.id|string] %}
+      <span class="assigned-user">
+        <img
+          src="{{ user.profile_pic_url }}"
+          alt="{{ user.username }}'s profile picture"
+          class="profile-pic"
+        />
+        {{ user.username }}
+      </span>
+      {% endfor %}
+    </div>
   </div>
+  {% endfor %}
+</div>
 
-  <div class="dashboard-section">
-    <h2>All Tasks</h2>
-    {% for task in tasks %}
-    <div class="task-item">
-      <h3>{{ task.title }} - {{ task.status }}</h3>
-      <p>{{ task.description }}</p>
-      <p>Due date: {{ task.due_date.strftime('%Y-%m-%d') }}</p>
-      <p>Time spent: {{ task.formatted_time_spent }}</p>
-      <p>
-        Assigned to: {% for user in task.assigned_users %}
+<div class="dashboard-section">
+  <h2>All Tasks</h2>
+  {% for task in tasks %}
+  <div class="task-item">
+    <h3>{{ task.title }} - {{ task.status }}</h3>
+    <p>{{ task.description }}</p>
+    <p>Due date: {{ task.due_date.strftime('%Y-%m-%d') }}</p>
+    <p>Time spent: {{ task.formatted_time_spent }}</p>
+    <p>
+      Assigned to: {% for user in task.assigned_users %}
+      <span class="assigned-user">
         <img
           src="{{ user|profile_pic_url }}"
           alt="{{ user.username }}'s profile picture"
           class="profile-pic"
-        />{{ user.username }}{% if not loop.last %}, {% endif %} {% endfor %}
-      </p>
-      {% if task.files %}
-      <h4>Uploaded Files:</h4>
-      <ul class="uploaded-files">
-        {% for file in task.files %}
-        <li class="uploaded-file">
-          {% if file.file_type == 'image' %}
-          <img
-            src="{{ url_for('serve_file', file_id=file.id) }}"
-            alt="Uploaded image"
-            class="uploaded-image"
-          />
-          {% endif %}
-          <a href="{{ url_for('download_file', file_id=file.id) }}"
-            >{{ file.filename }}</a
-          >
-        </li>
-        {% endfor %}
-      </ul>
-      {% endif %}
-    </div>
+        />
+        {{ user.username }}{% if not loop.last %}, {% endif %}
+      </span>
+      {% endfor %}
+    </p>
+
+    {% if task.files %}
+    <h4>Uploaded Files:</h4>
+    <ul>
+      {% for file in task.files %}
+      <li>
+        {% if file.file_type == 'image' %}
+        <img
+          src="{{ url_for('serve_file', file_id=file.id) }}"
+          alt="Uploaded image"
+          class="uploaded-image"
+        />
+        {% endif %}
+        <a href="{{ url_for('download_file', file_id=file.id) }}"
+          >{{ file.filename }}</a
+        >
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
   </div>
-  {% endfor %} {% endblock %}
+  {% endfor %}
 </div>
+
+<!-- Modal -->
+<div id="projectTasksModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2 id="modalProjectName"></h2>
+    <div id="modalTaskList"></div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var modal = document.getElementById("projectTasksModal");
+    var modalProjectName = document.getElementById("modalProjectName");
+    var modalTaskList = document.getElementById("modalTaskList");
+    var span = document.getElementsByClassName("close")[0];
+
+    // Get all "View Tasks" buttons
+    var viewTasksBtns = document.querySelectorAll(".view-tasks-btn");
+
+    // Add click event to all "View Tasks" buttons
+    viewTasksBtns.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var projectId = this.getAttribute("data-project-id");
+        var projectName =
+          this.closest(".project-item").querySelector("h3").textContent;
+
+        // Update modal title
+        modalProjectName.textContent = projectName;
+
+        // Fetch tasks for this project
+        fetch("/get_project_tasks/" + projectId)
+          .then((response) => response.json())
+          .then((tasks) => {
+            // Clear previous tasks
+            modalTaskList.innerHTML = "";
+
+            // Add new tasks
+            tasks.forEach(function (task) {
+              var taskElement = document.createElement("div");
+              taskElement.className = "task-item";
+
+              // Create the assigned users HTML
+              var assignedUsersHtml = task.assigned_users
+                .map(
+                  (user) =>
+                    `<span class="assigned-user">
+                                <img src="${user.profile_pic_url}" alt="${user.username}'s profile picture" class="profile-pic">
+                                ${user.username}
+                            </span>`
+                )
+                .join("");
+
+              taskElement.innerHTML = `
+                            <h4>${task.title} - ${task.status}</h4>
+                            <p>${task.description}</p>
+                            <p>Due date: ${task.due_date}</p>
+                            <p>Time spent: ${task.time_spent}</p>
+                            <p>Assigned to: ${assignedUsersHtml}</p>
+                        `;
+              modalTaskList.appendChild(taskElement);
+            });
+
+            // Show the modal
+            modal.style.display = "block";
+          });
+      });
+    });
+
+    // Close the modal when clicking on <span> (x)
+    span.onclick = function () {
+      modal.style.display = "none";
+    };
+
+    // Close the modal when clicking outside of it
+    window.onclick = function (event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    };
+  });
+</script>
+
+{% endblock %}
