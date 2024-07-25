@@ -40,7 +40,6 @@ from flask_wtf.file import FileField, FileAllowed
 from PIL import Image, ImageDraw, ImageFont
 import random
 import secrets
-import json
 from models import (
     db,
     User,
@@ -71,7 +70,7 @@ app.config["MAIL_USE_TLS"] = True
 app.config["MAIL_USERNAME"] = "tmvaptest8@gmail.com"  # Change this to your email
 app.config["MAIL_PASSWORD"] = "testPass1"  # Change this to your email password
 app.config["MAIL_DEFAULT_SENDER"] = "tmvaptest8@gmail.com"  # Change this to your email
-app.config["UPLOAD_FOLDER"] = os.path.join(app.root_path, "static", "uploads")
+app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static', 'uploads')
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16MB max-limit
 app.config["PROFILE_PICS"] = os.path.join(basedir, "static", "profile_pics")
 
@@ -85,8 +84,8 @@ mail = Mail(app)
 csrf.init_app(app)
 db.init_app(app)
 
-if not os.path.exists(app.config["UPLOAD_FOLDER"]):
-    os.makedirs(app.config["UPLOAD_FOLDER"])
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+    os.makedirs(app.config['UPLOAD_FOLDER'])
 
 # Models
 
@@ -98,16 +97,15 @@ task_assignments = db.Table(
 
 
 class ChatRequest(db.Model):
-    __tablename__ = "chat_request"
+    __tablename__ = 'chat_request'
     id = db.Column(db.Integer, primary_key=True)
-    sender_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-    receiver_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-    status = db.Column(db.String(20), default="pending")
+    sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    status = db.Column(db.String(20), default='pending')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    request_type = db.Column(db.String(20), default="chat")  # 'chat' or 'friend'
+    request_type = db.Column(db.String(20), default='chat')  # 'chat' or 'friend'
 
     # Remove relationships from here
-
 
 class Message(db.Model):
     __tablename__ = "messages"
@@ -116,25 +114,20 @@ class Message(db.Model):
     receiver_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     content = db.Column(db.Text, nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-    files = db.relationship(
-        "MessageFile", back_populates="message", cascade="all, delete-orphan"
-    )
+    files = db.relationship('MessageFile', back_populates='message', cascade="all, delete-orphan")
 
     sender = db.relationship("User", foreign_keys=[sender_id], backref="sent_messages")
-    receiver = db.relationship(
-        "User", foreign_keys=[receiver_id], backref="received_messages"
-    )
-
+    receiver = db.relationship("User", foreign_keys=[receiver_id], backref="received_messages")
 
 class MessageFile(db.Model):
     __tablename__ = "message_files"
     id = db.Column(db.Integer, primary_key=True)
-    message_id = db.Column(db.Integer, db.ForeignKey("messages.id"), nullable=False)
+    message_id = db.Column(db.Integer, db.ForeignKey('messages.id'), nullable=False)
     filename = db.Column(db.String(255), nullable=False)
     file_path = db.Column(db.String(255), nullable=False)
     file_type = db.Column(db.String(50))
     message = db.relationship("Message", back_populates="files")
-
+    
 
 class User(UserMixin, db.Model):
     __tablename__ = "user"
@@ -148,18 +141,14 @@ class User(UserMixin, db.Model):
         "Task", secondary=task_assignments, back_populates="assigned_users"
     )
     # Update these relationships
-    sent_chat_requests = db.relationship(
-        "ChatRequest",
-        foreign_keys="ChatRequest.sender_id",
-        backref="sender",
-        lazy="dynamic",
-    )
-    received_chat_requests = db.relationship(
-        "ChatRequest",
-        foreign_keys="ChatRequest.receiver_id",
-        backref="receiver",
-        lazy="dynamic",
-    )
+    sent_chat_requests = db.relationship('ChatRequest', 
+                                         foreign_keys='ChatRequest.sender_id',
+                                         backref='sender',
+                                         lazy='dynamic')
+    received_chat_requests = db.relationship('ChatRequest', 
+                                             foreign_keys='ChatRequest.receiver_id',
+                                             backref='receiver',
+                                             lazy='dynamic')
     # Add these new relationships for FriendRequest
     sent_friend_requests = db.relationship(
         "FriendRequest",
@@ -176,20 +165,18 @@ class User(UserMixin, db.Model):
 
     # Keep the friends relationship
     friends = db.relationship(
-        "User",
-        secondary=friendship,
+        'User', secondary=friendship,
         primaryjoin=(friendship.c.user_id == id),
         secondaryjoin=(friendship.c.friend_id == id),
-        backref=db.backref("befriended_by", lazy="dynamic"),
-        lazy="dynamic",
+        backref=db.backref('befriended_by', lazy='dynamic'),
+        lazy='dynamic'
     )
 
 
 # Friendship association table
-friendship = db.Table(
-    "friendship",
-    db.Column("user_id", db.Integer, db.ForeignKey("user.id"), primary_key=True),
-    db.Column("friend_id", db.Integer, db.ForeignKey("user.id"), primary_key=True),
+friendship = db.Table('friendship',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+    db.Column('friend_id', db.Integer, db.ForeignKey('user.id'), primary_key=True)
 )
 
 
@@ -236,7 +223,6 @@ class Task(db.Model):
         "User", secondary=task_assignments, back_populates="assigned_tasks"
     )
 
-
 class File(db.Model):
     __tablename__ = "file"
     id = db.Column(db.Integer, primary_key=True)
@@ -248,38 +234,22 @@ class File(db.Model):
 
 
 class LoginForm(FlaskForm):
-    username = StringField(
-        "Username", render_kw={"class": "form-control"}, validators=[DataRequired()]
-    )
-    password = PasswordField(
-        "Password", render_kw={"class": "form-control"}, validators=[DataRequired()]
-    )
-    submit = SubmitField("Log In", render_kw={"class": "btn btn-primary"})
+    username = StringField("Username", render_kw={'class': 'form-control'}, validators=[DataRequired()])
+    password = PasswordField("Password", render_kw={'class': 'form-control'}, validators=[DataRequired()])
+    submit = SubmitField("Log In", render_kw={'class': 'btn btn-primary'})
 
 
 class RegistrationForm(FlaskForm):
-    username = StringField(
-        "Username", render_kw={"class": "form-control"}, validators=[DataRequired()]
-    )
-    email = StringField(
-        "Email",
-        render_kw={"class": "form-control"},
-        validators=[DataRequired(), Email()],
-    )
-    password = PasswordField(
-        "Password", render_kw={"class": "form-control"}, validators=[DataRequired()]
-    )
+    username = StringField("Username", render_kw={'class': 'form-control'}, validators=[DataRequired()])
+    email = StringField("Email", render_kw={'class': 'form-control'}, validators=[DataRequired(), Email()])
+    password = PasswordField("Password", render_kw={'class': 'form-control'}, validators=[DataRequired()])
     confirm_password = PasswordField(
-        "Confirm Password",
-        render_kw={"class": "form-control"},
-        validators=[DataRequired(), EqualTo("password")],
+        "Confirm Password", render_kw={'class': 'form-control'}, validators=[DataRequired(), EqualTo("password")]
     )
     profile_picture = FileField(
-        "Profile Picture",
-        render_kw={"class": "form-control"},
-        validators=[FileAllowed(["jpg", "png", "jpeg", "gif"])],
+        "Profile Picture", render_kw={'class': 'form-control'}, validators=[FileAllowed(["jpg", "png", "jpeg", "gif"])]
     )
-    submit = SubmitField("Sign Up", render_kw={"class": "btn btn-primary"})
+    submit = SubmitField("Sign Up", render_kw={'class': 'btn btn-primary'})
 
     def validate_email(self, email):
         try:
@@ -334,7 +304,8 @@ ALLOWED_EXTENSIONS = {
 
 # Function to check if the file extension is allowed
 def allowed_file(filename):
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 def admin_required(f):
@@ -376,9 +347,7 @@ def user_profile(user_id):
     user = User.query.get_or_404(user_id)
     form = EditProfileForm(obj=user)
 
-    if request.method == "POST" and (
-        current_user.is_admin or current_user.id == user.id
-    ):
+    if request.method == "POST" and (current_user.is_admin or current_user.id == user.id):
         if form.validate_on_submit():
             user.username = form.username.data
             user.email = form.email.data
@@ -403,9 +372,8 @@ def user_profile(user_id):
         form=form,
         is_friend=is_friend,
         can_send_friend_request=can_send_friend_request,
-        can_chat=can_chat,
+        can_chat=can_chat
     )
-
 
 @app.route("/make_admin/<int:user_id>", methods=["POST"])
 @login_required
@@ -644,58 +612,19 @@ def user_dashboard():
 @login_required
 @admin_required
 def admin_dashboard():
+
     users = User.query.filter(User.id != current_user.id).all()
     all_projects = Project.query.all()
-
-    # Fetch tasks with their assigned users
-    all_tasks = Task.query.options(db.joinedload(Task.assigned_users)).all()
+    all_tasks = Task.query.all()
 
     for task in all_tasks:
         task.formatted_time_spent = format_time_spent(task.time_spent)
 
-    # Group tasks by project and collect assigned users
-    project_tasks = {}
-    project_users = {}
-    for project in all_projects:
-        project_tasks[str(project.id)] = [
-            {
-                "id": task.id,
-                "title": task.title,
-                "status": task.status,
-                "assigned_users": [
-                    {
-                        "username": user.username,
-                        "profile_pic_url": url_for(
-                            "static", filename=f"profile_pics/{user.profile_picture}"
-                        ),
-                    }
-                    for user in task.assigned_users
-                ],
-            }
-            for task in all_tasks
-            if task.project_id == project.id
-        ]
-        # Collect unique users for each project
-        project_users[str(project.id)] = list(
-            {
-                user["username"]: user
-                for task in project_tasks[str(project.id)]
-                for user in task["assigned_users"]
-            }.values()
-        )
-
-    # Convert project_tasks to a JSON string
-    project_tasks_json = json.dumps(project_tasks)
-
     return render_template(
-        "admin_dashboard.html",
-        users=users,
-        projects=all_projects,
-        tasks=all_tasks,
-        project_tasks_json=project_tasks_json,
-        project_users=project_users,
+        "admin_dashboard.html", users=users, projects=all_projects, tasks=all_tasks
     )
 
+pass
 
 @app.route("/user_list", methods=["GET", "POST"])
 @login_required
@@ -706,8 +635,8 @@ def user_list():
     all_projects = Project.query.all()
     all_tasks = Task.query.all()
 
-    return render_template("user_list.html", users=users)
-
+    return render_template(
+        "user_list.html", users=users)
 
 pass
 
@@ -743,38 +672,6 @@ def projects():
     return render_template(
         "projects.html", users=users, projects=all_projects, tasks=all_tasks
     )
-
-
-@app.route("/get_project_tasks/<int:project_id>")
-@login_required
-@admin_required
-def get_project_tasks(project_id):
-    tasks = Task.query.filter_by(project_id=project_id).all()
-    tasks_data = []
-    for task in tasks:
-        assigned_users = [
-            {
-                "username": user.username,
-                "profile_pic_url": url_for(
-                    "static", filename=f"profile_pics/{user.profile_picture}"
-                ),
-            }
-            for user in task.assigned_users
-        ]
-        tasks_data.append(
-            {
-                "id": task.id,
-                "title": task.title,
-                "status": task.status,
-                "description": task.description,
-                "due_date": (
-                    task.due_date.strftime("%Y-%m-%d") if task.due_date else "Not set"
-                ),
-                "time_spent": format_time_spent(task.time_spent),
-                "assigned_users": assigned_users,
-            }
-        )
-    return jsonify(tasks_data)
 
 
 @app.route("/tasks", methods=["GET", "POST"])
@@ -963,14 +860,12 @@ def reset_password(token):
         return redirect(url_for("login"))
     return render_template("reset_password.html")
 
-
-@app.route("/uploads/<filename>")
+@app.route('/uploads/<filename>')
 def serve_image(filename):
-    return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
-
-
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 # def uploaded_file(filename):
 #     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
 
 
 @app.route("/upload_file/<int:task_id>", methods=["POST"])
@@ -1019,13 +914,11 @@ def serve_file(file_id):
     file = File.query.get_or_404(file_id)
     return send_file(file.file_path)
 
-
 @app.route("/download_file/<int:file_id>")
 @login_required
 def download_file(file_id):
     file = MessageFile.query.get_or_404(file_id)
     return send_file(file.file_path, as_attachment=True, download_name=file.filename)
-
 
 @app.route("/delete_file/<int:file_id>", methods=["POST"])
 @login_required
@@ -1088,7 +981,7 @@ def handle_chat_request(request_id, action):
         flash("Chat request rejected", "info")
 
     db.session.commit()
-    return redirect(url_for("chat_requests"))
+    return redirect(url_for('chat_requests'))
 
 
 @app.route("/chat/<int:user_id>", methods=["GET", "POST"])
@@ -1099,48 +992,50 @@ def chat(user_id):
         flash("You can only chat with friends.", "error")
         return redirect(url_for("messages"))
 
+    messages = Message.query.filter(
+        ((Message.sender_id == current_user.id) & (Message.receiver_id == user_id)) |
+        ((Message.sender_id == user_id) & (Message.receiver_id == current_user.id))
+    ).order_by(Message.timestamp).all()
+
     if request.method == "POST":
         content = request.form.get("message")
         files = request.files.getlist("files")
-
-        new_message = Message(
-            sender_id=current_user.id, receiver_id=user_id, content=content
-        )
+        
+        new_message = Message(sender_id=current_user.id, receiver_id=user_id, content=content)
         db.session.add(new_message)
         db.session.flush()  # This assigns an id to new_message
 
         for file in files:
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
+                # Add a unique identifier to prevent filename conflicts
                 unique_filename = f"{uuid.uuid4()}_{filename}"
-                file_path = os.path.join(app.config["UPLOAD_FOLDER"], unique_filename)
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
                 file.save(file_path)
-
-                file_type = (
-                    "image" if file.content_type.startswith("image") else "document"
-                )
+                
+                file_type = 'image' if file.content_type.startswith('image') else 'document'
                 new_file = MessageFile(
                     message_id=new_message.id,
                     filename=unique_filename,
                     file_path=file_path,
-                    file_type=file_type,
+                    file_type=file_type
                 )
                 db.session.add(new_file)
 
         db.session.commit()
-        return redirect(url_for("messages", user_id=user_id))
+        return redirect(url_for("chat", user_id=user_id))
 
-    return redirect(url_for("messages", user_id=user_id))
-
+    return render_template("chat.html", other_user=other_user, messages=messages)
 
 @app.route("/chat_requests")
 @login_required
 def chat_requests():
     pending_requests = ChatRequest.query.filter_by(
-        receiver_id=current_user.id, status="pending", request_type="chat"
+        receiver_id=current_user.id, 
+        status="pending",
+        request_type="chat"
     ).all()
     return render_template("chat_requests.html", requests=pending_requests)
-
 
 @app.route("/send_message/<int:receiver_id>", methods=["POST"])
 @login_required
@@ -1152,9 +1047,7 @@ def send_message(receiver_id):
 
     content = request.form.get("content")
     if content:
-        new_message = Message(
-            sender_id=current_user.id, receiver_id=receiver_id, content=content
-        )
+        new_message = Message(sender_id=current_user.id, receiver_id=receiver_id, content=content)
         db.session.add(new_message)
         db.session.commit()
         flash("Message sent", "success")
@@ -1165,21 +1058,19 @@ def send_message(receiver_id):
 @login_required
 def send_chat_request(receiver_id):
     existing_request = ChatRequest.query.filter_by(
-        sender_id=current_user.id,
-        receiver_id=receiver_id,
+        sender_id=current_user.id, 
+        receiver_id=receiver_id, 
         status="pending",
-        request_type="chat",
+        request_type="chat"
     ).first()
     if existing_request:
         flash("Chat request already sent", "info")
     else:
-        new_request = ChatRequest(
-            sender_id=current_user.id, receiver_id=receiver_id, request_type="chat"
-        )
+        new_request = ChatRequest(sender_id=current_user.id, receiver_id=receiver_id, request_type="chat")
         db.session.add(new_request)
         db.session.commit()
         flash("Chat request sent", "success")
-    return redirect(url_for("user_profile", user_id=receiver_id))
+    return redirect(url_for('user_profile', user_id=receiver_id))
 
 
 @app.route("/send_friend_request/<int:receiver_id>", methods=["POST"])
@@ -1244,7 +1135,7 @@ def send_request(receiver_id, request_type):
         sender_id=current_user.id,
         receiver_id=receiver_id,
         status="pending",
-        request_type=request_type,
+        request_type=request_type
     ).first()
     if existing_request:
         flash(f"{request_type.capitalize()} request already sent", "info")
@@ -1252,7 +1143,7 @@ def send_request(receiver_id, request_type):
         new_request = ChatRequest(
             sender_id=current_user.id,
             receiver_id=receiver_id,
-            request_type=request_type,
+            request_type=request_type
         )
         db.session.add(new_request)
         db.session.commit()
@@ -1302,69 +1193,10 @@ def handle_request(request_id, action):
 def messages():
     friends = current_user.friends.all()
     pending_requests = ChatRequest.query.filter_by(
-        receiver_id=current_user.id, status="pending"
+        receiver_id=current_user.id, 
+        status="pending"
     ).all()
-
-    # If a specific chat is opened, get the user_id from the query parameter
-    chat_user_id = request.args.get("user_id", type=int)
-    chat_user = User.query.get(chat_user_id) if chat_user_id else None
-
-    messages = []
-    if chat_user:
-        messages = (
-            Message.query.filter(
-                (
-                    (Message.sender_id == current_user.id)
-                    & (Message.receiver_id == chat_user.id)
-                )
-                | (
-                    (Message.sender_id == chat_user.id)
-                    & (Message.receiver_id == current_user.id)
-                )
-            )
-            .order_by(Message.timestamp)
-            .all()
-        )
-
-    return render_template(
-        "messages.html",
-        friends=friends,
-        requests=pending_requests,
-        chat_user=chat_user,
-        messages=messages,
-    )
-
-
-@app.route("/get_messages/<int:user_id>")
-@login_required
-def get_messages(user_id):
-    messages = (
-        Message.query.filter(
-            ((Message.sender_id == current_user.id) & (Message.receiver_id == user_id))
-            | (
-                (Message.sender_id == user_id)
-                & (Message.receiver_id == current_user.id)
-            )
-        )
-        .order_by(Message.timestamp)
-        .all()
-    )
-
-    messages_data = []
-    for message in messages:
-        message_data = {
-            "id": message.id,
-            "sender_id": message.sender_id,
-            "content": message.content,
-            "timestamp": message.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
-            "files": [
-                {"id": file.id, "filename": file.filename, "file_type": file.file_type}
-                for file in message.files
-            ],
-        }
-        messages_data.append(message_data)
-
-    return jsonify(messages_data)
+    return render_template("messages.html", friends=friends, requests=pending_requests)
 
 
 @app.route("/delete_message/<int:message_id>", methods=["POST"])
@@ -1375,27 +1207,21 @@ def delete_message(message_id):
         if message.sender_id != current_user.id:
             flash("Unauthorized to delete this message.", "error")
             return redirect(url_for("chat", user_id=message.receiver_id))
-
+        
         # Delete associated files from the filesystem
         for file in message.files:
             if os.path.exists(file.file_path):
                 os.remove(file.file_path)
-
-        other_user_id = (
-            message.receiver_id
-            if message.sender_id == current_user.id
-            else message.sender_id
-        )
-
+        
+        other_user_id = message.receiver_id if message.sender_id == current_user.id else message.sender_id
+        
         db.session.delete(message)
         db.session.commit()
-
+        
         flash("Message deleted successfully.", "success")
-
+        
         if request.is_json:
-            return jsonify(
-                {"success": True, "redirect": url_for("chat", user_id=other_user_id)}
-            )
+            return jsonify({"success": True, "redirect": url_for("chat", user_id=other_user_id)})
         else:
             return redirect(url_for("chat", user_id=other_user_id))
     except Exception as e:
@@ -1406,7 +1232,6 @@ def delete_message(message_id):
         else:
             return redirect(url_for("chat", user_id=other_user_id))
 
-
 @app.route("/check_message/<int:message_id>", methods=["GET"])
 @login_required
 def check_message(message_id):
@@ -1415,7 +1240,6 @@ def check_message(message_id):
         return jsonify({"exists": True, "content": message.content})
     else:
         return jsonify({"exists": False})
-
 
 if __name__ == "__main__":
     with app.app_context():
