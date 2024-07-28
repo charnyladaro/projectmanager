@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Management Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+        @media (min-width: 769px) {
+            .main-content {
+                margin-left: 16rem; /* 64px / 4px = 16rem */
+            }
+        }
+        .hamburger {
+            cursor: pointer;
+            width: 24px;
+            height: 24px;
+            transition: all 0.25s;
+            position: relative;
+        }
+        .hamburger-top,
+        .hamburger-middle,
+        .hamburger-bottom {
+            position: absolute;
+            width: 24px;
+            height: 2px;
+            top: 0;
+            left: 0;
+            background: #9ca3af;
+            transform: rotate(0);
+            transition: all 0.5s;
+        }
+        .hamburger-middle {
+            transform: translateY(7px);
+        }
+        .hamburger-bottom {
+            transform: translateY(14px);
+        }
+        .open .hamburger-top {
+            transform: rotate(45deg) translateY(6px) translateX(6px);
+        }
+        .open .hamburger-middle {
+            display: none;
+        }
+        .open .hamburger-bottom {
+            transform: rotate(-45deg) translateY(6px) translateX(-6px);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-md transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
+            <div class="p-4 flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-purple-600">Project Management Tool</h1>
+                <button id="closeSidebar" class="md:hidden text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <nav class="mt-4">
+                <a href="#" class="block px-4 py-2 bg-purple-100 text-purple-700">
+                    <i class="fas fa-chart-bar mr-2"></i> Dashboard
+                </a>
+                <a href="#" class="block px-4 py-2 text-gray-600 hover:bg-purple-100 hover:text-purple-700">
+                    <i class="fas fa-book mr-2"></i> Courses
+                </a>
+                <a href="#" class="block px-4 py-2 text-gray-600 hover:bg-purple-100 hover:text-purple-700">
+                    <i class="fas fa-chalkboard-teacher mr-2"></i> Instructor
+                </a>
+                <a href="#" class="block px-4 py-2 text-gray-600 hover:bg-purple-100 hover:text-purple-700">
+                    <i class="fas fa-shopping-cart mr-2"></i> Shop
+                </a>
+                <a href="#" class="block px-4 py-2 text-gray-600 hover:bg-purple-100 hover:text-purple-700">
+                    <i class="fas fa-puzzle-piece mr-2"></i> Widget
+                </a>
+                <a href="#" class="block px-4 py-2 text-gray-600 hover:bg-purple-100 hover:text-purple-700">
+                    <i class="fas fa-file-alt mr-2"></i> Pages
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden main-content">
+            <header class="bg-white shadow-sm">
+                <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+                    <button id="hamburger" class="hamburger md:hidden focus:outline-none">
+                        <span class="hamburger-top"></span>
+                        <span class="hamburger-middle"></span>
+                        <span class="hamburger-bottom"></span>
+                    </button>
+                    <h2 class="text-2xl font-semibold text-gray-800">Hamburger Menu</h2>
+                    <div class="flex items-center space-x-4">
+                        <button class="p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                            <i class="fas fa-cog text-xl"></i>
+                        </button>
+                        <button class="p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                            <i class="fas fa-comment-alt text-xl"></i>
+                        </button>
+                        <button class="p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                            <i class="fas fa-bell text-xl"></i>
+                        </button>
+                        <img class="h-8 w-8 rounded-full" src="/api/placeholder/32/32" alt="User avatar">
+                    </div>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <!-- Dashboard content -->
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                        <!-- Stats cards -->
+                        <div class="bg-white overflow-hidden shadow rounded-lg">
+                            <div class="px-4 py-5 sm:p-6">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 bg-purple-100 rounded-md p-3">
+                                        <i class="fas fa-user-graduate text-purple-600 text-xl"></i>
+                                    </div>
+                                    <div class="ml-5 w-0 flex-1">
+                                        <dl>
+                                            <dt class="text-sm font-medium text-gray-500 truncate">Total Students</dt>
+                                            <dd class="text-3xl font-semibold text-gray-900">10580</dd>
+                                        </dl>
+                                    </div>
+                                </div>
+                                <div class="mt-3 text-sm text-green-600">
+                                    <i class="fas fa-arrow-up"></i> 2.6% than last week
+                                </div>
+                            </div>
+                        </div>
+                        <!-- More stat cards... -->
+                    </div>
+
+                    <!-- Charts and tables -->
+                    <!-- Add more sections for Sales Overview, Course Progress, Popular Courses, etc. -->
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const hamburger = document.getElementById('hamburger');
+        const closeSidebarBtn = document.getElementById('closeSidebar');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('open');
+            hamburger.classList.toggle('open');
+        }
+
+        hamburger.addEventListener('click', toggleSidebar);
+        closeSidebarBtn.addEventListener('click', toggleSidebar);
+
+        // Close sidebar when clicking outside of it
+        document.addEventListener('click', (event) => {
+            if (!sidebar.contains(event.target) && !hamburger.contains(event.target) && sidebar.classList.contains('open')) {
+                toggleSidebar();
+            }
+        });
+    </script>
+</body>
+</html>

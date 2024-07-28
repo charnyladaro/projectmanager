@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Logip - Project Management Dashboard</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body,
+      html {
+        height: 100%;
+        font-family: "Inter", sans-serif;
+        background-color: #f5f5f5;
+        color: #333;
+        overflow: hidden;
+      }
+
+      .dashboard {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        width: 100vw;
+        overflow: hidden;
+      }
+
+      .sidebar {
+        background-color: #fff;
+        border-bottom: 1px solid #e0e0e0;
+        padding: 20px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .sidebar h2 {
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+
+      .sidebar ul {
+        list-style-type: none;
+        flex-grow: 1;
+      }
+
+      .sidebar li {
+        margin-bottom: 10px;
+        font-weight: 500;
+      }
+
+      .sidebar li:before {
+        content: "•";
+        margin-right: 10px;
+        color: #ccc;
+      }
+
+      .upgrade-btn {
+        background-color: #f0f0f0;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 10px;
+        font-weight: 600;
+        margin-top: 20px;
+        cursor: pointer;
+        width: 100%;
+      }
+
+      .logout-btn {
+        margin-top: auto;
+        background-color: #ff4d4d;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        width: 100%;
+      }
+
+      .main-content {
+        flex-grow: 1;
+        padding: 20px;
+        background-color: #f9f9f9;
+        overflow-y: auto;
+      }
+
+      .header {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 20px;
+      }
+
+      .header h1 {
+        font-size: 24px;
+        margin-bottom: 10px;
+      }
+
+      .header p {
+        color: #666;
+      }
+
+      .user-profile {
+        display: flex;
+        align-items: center;
+        background-color: white;
+        padding: 10px;
+        border-radius: 15px;
+        margin-top: 10px;
+        cursor: pointer;
+      }
+
+      .user-profile img {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        margin-right: 10px;
+      }
+
+      .stats {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .stat-box {
+        background-color: white;
+        padding: 15px;
+        border-radius: 15px;
+      }
+
+      .stat-box h3 {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 5px;
+      }
+
+      .stat-box p {
+        font-size: 20px;
+        font-weight: 600;
+      }
+
+      .stat-box span {
+        font-size: 12px;
+        color: #4caf50;
+      }
+
+      .chart,
+      .tasks,
+      .activity {
+        background-color: white;
+        padding: 15px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+      }
+
+      .chart h3,
+      .tasks h3,
+      .activity h3 {
+        font-size: 18px;
+        margin-bottom: 15px;
+      }
+
+      .task {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #f0f0f0;
+      }
+
+      .task:last-child {
+        border-bottom: none;
+      }
+
+      .task-status {
+        display: flex;
+        align-items: center;
+        font-size: 12px;
+      }
+
+      .task-status:before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 5px;
+      }
+
+      .in-progress:before {
+        background-color: #ffa500;
+      }
+      .on-hold:before {
+        background-color: #ff0000;
+      }
+      .done:before {
+        background-color: #4caf50;
+      }
+
+      .activity-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .activity-item img {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        margin-right: 10px;
+      }
+
+      .popup {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+      }
+
+      .popup h2 {
+        margin-bottom: 15px;
+      }
+
+      .popup button {
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+
+      .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+      }
+
+      @media (min-width: 768px) {
+        .dashboard {
+          flex-direction: row;
+        }
+
+        .sidebar {
+          width: 240px;
+          height: 100vh;
+          border-right: 1px solid #e0e0e0;
+          border-bottom: none;
+        }
+
+        .main-content {
+          padding: 30px;
+        }
+
+        .header {
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .user-profile {
+          margin-top: 0;
+        }
+
+        .stats {
+          flex-direction: row;
+          justify-content: space-between;
+        }
+
+        .stat-box {
+          flex-basis: 32%;
+        }
+      }
+
+      @media (min-width: 1024px) {
+        .header h1 {
+          font-size: 28px;
+        }
+
+        .stat-box p {
+          font-size: 24px;
+        }
+
+        .chart,
+        .tasks,
+        .activity {
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard">
+      <div class="sidebar">
+        <h2>logip</h2>
+        <ul>
+          <li>Home</li>
+          <li>Projects</li>
+          <li>Tasks</li>
+          <li>Team</li>
+          <li>Settings</li>
+        </ul>
+        <button class="upgrade-btn">Upgrade to Pro</button>
+        <button class="logout-btn">Log out</button>
+      </div>
+      <div class="main-content">
+        <div class="header">
+          <div>
+            <h1>Hello, Margaret</h1>
+            <p>Track team progress here. You almost reach a goal!</p>
+          </div>
+          <div class="user-profile" id="accountButton">
+            <img src="/api/placeholder/30/30" alt="User Avatar" />
+            <p>Megan Norton</p>
+          </div>
+        </div>
+        <div class="stats">
+          <div class="stat-box">
+            <h3>Finished</h3>
+            <p>18</p>
+            <span>+8 tasks</span>
+          </div>
+          <div class="stat-box">
+            <h3>Tracked</h3>
+            <p>31h</p>
+            <span style="color: #ff0000">-5 hours</span>
+          </div>
+          <div class="stat-box">
+            <h3>Efficiency</h3>
+            <p>93%</p>
+            <span>+12%</span>
+          </div>
+        </div>
+        <div class="chart">
+          <h3>Performance</h3>
+          <!-- Placeholder for chart -->
+          <p>Chart would go here</p>
+        </div>
+        <div class="tasks">
+          <h3>Current Tasks</h3>
+          <div class="task">
+            <p>Product Review for UI8 Market</p>
+            <div class="task-status in-progress">In progress - 4h</div>
+          </div>
+          <div class="task">
+            <p>UX Research for Product</p>
+            <div class="task-status on-hold">On hold - 8h</div>
+          </div>
+          <div class="task">
+            <p>App design and development</p>
+            <div class="task-status done">Done - 32h</div>
+          </div>
+        </div>
+        <div class="activity">
+          <h3>Activity</h3>
+          <div class="activity-item">
+            <img src="/api/placeholder/30/30" alt="Floyd Miles" />
+            <p>Floyd Miles commented on Stark Project</p>
+          </div>
+          <div class="activity-item">
+            <img src="/api/placeholder/30/30" alt="Guy Hawkins" />
+            <p>Guy Hawkins added a file to 7hero Project</p>
+          </div>
+          <div class="activity-item">
+            <img src="/api/placeholder/30/30" alt="Kristin Watson" />
+            <p>Kristin Watson commented on 7hero Project</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="popup" id="accountPopup">
+      <h2>Account Settings</h2>
+      <button onclick="editProfile()">Edit Profile</button>
+      <button onclick="openSettings()">Settings</button>
+      <button onclick="closePopup()">Close</button>
+    </div>
+
+    <script>
+      const accountButton = document.getElementById("accountButton");
+      const accountPopup = document.getElementById("accountPopup");
+      const overlay = document.getElementById("overlay");
+
+      accountButton.addEventListener("click", () => {
+        accountPopup.style.display = "block";
+        overlay.style.display = "block";
+      });
+
+      function closePopup() {
+        accountPopup.style.display = "none";
+        overlay.style.display = "none";
+      }
+
+      function editProfile() {
+        alert("Edit Profile functionality would go here");
+      }
+
+      function openSettings() {
+        alert("Settings functionality would go here");
+      }
+
+      overlay.addEventListener("click", closePopup);
+    </script>
+  </body>
+</html>
