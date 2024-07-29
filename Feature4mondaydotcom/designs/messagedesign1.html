@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LMS Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .message-list {
+        height: calc(100vh - 200px);
+        overflow-y: auto;
+      }
+      .chat-window {
+        height: calc(100vh - 136px);
+      }
+      .chat-messages {
+        height: calc(100% - 120px);
+        overflow-y: auto;
+      }
+    </style>
+  </head>
+  <!-- https://themeforest.net/item/ilearning-multipurpose-admin-dashboard/46478430?ref=ydesig -->
+  <body class="bg-gray-100">
+    <div class="flex h-screen">
+      <!-- Sidebar -->
+      <div class="w-64 bg-white shadow-md">
+        <div class="p-4 flex items-center space-x-2">
+          <div
+            class="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold"
+          >
+            i
+          </div>
+          <span class="text-xl font-semibold">iLearning</span>
+        </div>
+        <nav class="mt-8">
+          <a
+            href="#"
+            class="block px-4 py-2 text-gray-600 hover:bg-purple-100 hover:text-purple-700"
+            >User</a
+          >
+          <a
+            href="#"
+            class="block px-4 py-2 text-gray-600 hover:bg-purple-100 hover:text-purple-700"
+            >CMS</a
+          >
+          <a
+            href="#"
+            class="block px-4 py-2 text-gray-600 hover:bg-purple-100 hover:text-purple-700"
+            >Config</a
+          >
+          <a href="#" class="block px-4 py-2 bg-purple-100 text-purple-700"
+            >Dashboard</a
+          >
+          <a
+            href="#"
+            class="block px-4 py-2 text-gray-600 hover:bg-purple-100 hover:text-purple-700 pl-8"
+            >Dashboard</a
+          >
+          <a
+            href="#"
+            class="block px-4 py-2 text-gray-600 hover:bg-purple-100 hover:text-purple-700 pl-8"
+            >Message</a
+          >
+          <a
+            href="#"
+            class="block px-4 py-2 text-gray-600 hover:bg-purple-100 hover:text-purple-700"
+            >Courses</a
+          >
+          <a
+            href="#"
+            class="block px-4 py-2 text-gray-600 hover:bg-purple-100 hover:text-purple-700"
+            >Instructor</a
+          >
+          <a
+            href="#"
+            class="block px-4 py-2 text-gray-600 hover:bg-purple-100 hover:text-purple-700"
+            >Shop</a
+          >
+          <a
+            href="#"
+            class="block px-4 py-2 text-gray-600 hover:bg-purple-100 hover:text-purple-700"
+            >Widget</a
+          >
+          <a
+            href="#"
+            class="block px-4 py-2 text-gray-600 hover:bg-purple-100 hover:text-purple-700"
+            >Pages</a
+          >
+        </nav>
+      </div>
+
+      <!-- Main content -->
+      <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Header -->
+        <header class="bg-white shadow-sm">
+          <div
+            class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center"
+          >
+            <h1 class="text-2xl font-semibold text-gray-800">LMS Dashboard</h1>
+            <div class="flex items-center space-x-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6 text-gray-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6 text-gray-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                />
+              </svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6 text-gray-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                />
+              </svg>
+              <img
+                src="/api/placeholder/32/32"
+                alt="User avatar"
+                class="h-8 w-8 rounded-full"
+              />
+            </div>
+          </div>
+        </header>
+
+        <!-- Dashboard content -->
+        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
+          <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex space-x-4">
+              <!-- Messages list -->
+              <div class="w-1/3 bg-white rounded-lg shadow-md p-4">
+                <h2 class="text-xl font-semibold mb-4">
+                  Messages
+                  <span
+                    class="bg-red-500 text-white text-xs rounded-full px-2 py-1 ml-2"
+                    >40</span
+                  >
+                </h2>
+                <div class="flex space-x-4 mb-4">
+                  <button
+                    class="px-4 py-2 rounded bg-purple-100 text-purple-700"
+                    id="instructorTab"
+                  >
+                    Instructor
+                  </button>
+                  <button
+                    class="px-4 py-2 rounded text-gray-600"
+                    id="publicGroupTab"
+                  >
+                    Public Group
+                  </button>
+                </div>
+                <div class="message-list space-y-4" id="messageList">
+                  <!-- Message list items will be dynamically inserted here -->
+                </div>
+              </div>
+
+              <!-- Chat window -->
+              <div
+                class="w-2/3 bg-white rounded-lg shadow-md flex flex-col chat-window"
+              >
+                <div class="p-4 border-b flex justify-between items-center">
+                  <div class="flex items-center space-x-3">
+                    <img
+                      src="/api/placeholder/40/40"
+                      alt="Donna Brown"
+                      class="w-10 h-10 rounded-full"
+                    />
+                    <div>
+                      <h3 class="font-semibold">Donna Brown</h3>
+                      <span class="text-sm text-green-500">Online</span>
+                    </div>
+                  </div>
+                  <div class="flex space-x-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-6 w-6 text-purple-600 cursor-pointer"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                      />
+                    </svg>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-6 w-6 text-purple-600 cursor-pointer"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-6 w-6 text-gray-500 cursor-pointer"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+                      />
+                    </svg>
+                  </div>
+                </div>
+                <div
+                  class="flex-1 overflow-y-auto p-4 space-y-4 chat-messages"
+                  id="chatMessages"
+                >
+                  <!-- Chat messages will be dynamically inserted here -->
+                </div>
+                <div class="p-4 border-t">
+                  <div class="flex items-center space-x-2">
+                    <input
+                      type="text"
+                      id="messageInput"
+                      placeholder="Write your message..."
+                      class="flex-1 border rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-600"
+                    />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-6 w-6 text-gray-500 cursor-pointer"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-6 w-6 text-gray-500 cursor-pointer"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
+                      />
+                    </svg>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-6 w-6 text-gray-500 cursor-pointer"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <button
+                      id="sendMessage"
+                      class="bg-purple-600 text-white rounded-full p-2"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Courses</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 20px;
+      }
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+      h1 {
+        font-size: 24px;
+        margin: 0;
+      }
+      .upload-btn {
+        background-color: #8a2be2;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 20px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+      }
+      .upload-btn::before {
+        content: "↑";
+        margin-right: 5px;
+      }
+      .course-card {
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+      .course-image {
+        width: 100px;
+        height: 100px;
+        border-radius: 10px;
+        margin-right: 20px;
+      }
+      .course-info {
+        flex-grow: 1;
+        align-items: center;
+        padding-left: 40px; /* Add left padding to move content right */
+      }
+      .course-details {
+        flex-grow: 1;
+        display: flex;
+        justify-content: space-between;
+      }
+      .course-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin: 0 0 5px 0;
+      }
+      .course-author {
+        color: #666;
+        margin: 0;
+      }
+      .course-stats {
+        display: flex;
+        margin-top: 10px;
+      }
+      .stat {
+        background-color: #f0f0ff;
+        height: 40px;
+        padding: 10px;
+        margin-top: 20px;
+        border-radius: 5px;
+        margin-right: 10px;
+        text-align: center;
+      }
+      .stat-value {
+        font-weight: bold;
+        margin: 0;
+      }
+      .stat-label {
+        font-size: 12px;
+        color: #666;
+        margin: 0;
+      }
+      .tag {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 12px;
+        margin-right: 5px;
+      }
+      .tag-live {
+        background-color: #e0ffe0;
+        color: #008000;
+      }
+      .tag-draft {
+        background-color: #ffe0e0;
+        color: #ff0000;
+      }
+      .menu-dots {
+        cursor: pointer;
+        padding-left: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>My Courses</h1>
+        <button class="upload-btn">New Upload</button>
+      </div>
+
+      <div class="course-card">
+        <div class="course-info">
+          <a href="#">
+            <div class="course-details">
+              <div class="course-title">
+                <h2>Introduction of UI/UX</h2>
+                <p>Assigned Users</p>
+              </div>
+              <div class="course-stats">
+                <div class="stat">
+                  <p class="stat-value">$7,500</p>
+                  <p class="stat-label">Total Earning</p>
+                </div>
+                <div class="stat">
+                  <p class="stat-value">3,265</p>
+                  <p class="stat-label">Total Enrollment</p>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Repeat the course-card div for other courses -->
+    </div>
+  </body>
+</html>

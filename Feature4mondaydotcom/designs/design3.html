@@ -1,208 +1,376 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard Template</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @media (max-width: 768px) {
-            #sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s ease-in-out;
-            }
-            #sidebar.open {
-                transform: translateX(0);
-            }
+      @media (max-width: 768px) {
+        #sidebar {
+          transform: translateX(-100%);
+          transition: transform 0.3s ease-in-out;
         }
+        #sidebar.open {
+          transform: translateX(0);
+        }
+      }
     </style>
-</head>
-<body class="bg-gray-100">
+  </head>
+  <body class="bg-gray-100">
     <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar -->
-        <aside id="sidebar" class="bg-gray-800 text-white w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-200 ease-in-out">
-            <nav>
-                <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white">
-                    Dashboard
-                </a>
-                <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white">
-                    Analytics
-                </a>
-                <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white">
-                    Reports
-                </a>
-                <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white">
-                    Settings
-                </a>
-            </nav>
-        </aside>
+      <!-- Sidebar -->
+      <aside
+        id="sidebar"
+        class="bg-gray-800 text-white w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-200 ease-in-out"
+      >
+        <nav>
+          <a
+            href="#"
+            class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white"
+          >
+            Dashboard
+          </a>
+          <a
+            href="#"
+            class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white"
+          >
+            Analytics
+          </a>
+          <a
+            href="#"
+            class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white"
+          >
+            Reports
+          </a>
+          <a
+            href="#"
+            class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white"
+          >
+            Settings
+          </a>
+        </nav>
+      </aside>
 
-        <!-- Main Content -->
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <!-- Top Navbar -->
-            <header class="bg-white shadow-sm">
-                <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-                    <div class="flex items-center justify-between">
-                        <button id="menu-toggle" class="text-gray-500 focus:outline-none focus:text-gray-700 md:hidden">
-                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                            </svg>
-                        </button>
-                        <div class="flex items-center">
-                            <button class="p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                                </svg>
-                            </button>
-                            <button class="ml-3 p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
-                            </button>
-                        </div>
+      <!-- Main Content -->
+      <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Top Navbar -->
+        <header class="bg-white shadow-sm">
+          <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between">
+              <button
+                id="menu-toggle"
+                class="text-gray-500 focus:outline-none focus:text-gray-700 md:hidden"
+              >
+                <svg
+                  class="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                </svg>
+              </button>
+              <div class="flex items-center">
+                <button
+                  class="p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  <svg
+                    class="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                    />
+                  </svg>
+                </button>
+                <button
+                  class="ml-3 p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  <svg
+                    class="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
+          <div class="container mx-auto px-6 py-8">
+            <h3 class="text-gray-700 text-3xl font-medium">Dashboard</h3>
+
+            <div class="mt-8">
+              <!-- Cards -->
+              <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                <!-- Card 1 -->
+                <div class="bg-white overflow-hidden shadow rounded-lg">
+                  <div class="p-5">
+                    <div class="flex items-center">
+                      <div class="flex-shrink-0 bg-indigo-500 rounded-md p-3">
+                        <svg
+                          class="h-6 w-6 text-white"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                          />
+                        </svg>
+                      </div>
+                      <div class="ml-5 w-0 flex-1">
+                        <dl>
+                          <dt
+                            class="text-sm font-medium text-gray-500 truncate"
+                          >
+                            Total Users
+                          </dt>
+                          <dd class="text-3xl font-semibold text-gray-900">
+                            10,897
+                          </dd>
+                        </dl>
+                      </div>
                     </div>
+                  </div>
                 </div>
-            </header>
-
-            <!-- Main Content Area -->
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
-                <div class="container mx-auto px-6 py-8">
-                    <h3 class="text-gray-700 text-3xl font-medium">Dashboard</h3>
-
-                    <div class="mt-8">
-                        <!-- Cards -->
-                        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                            <!-- Card 1 -->
-                            <div class="bg-white overflow-hidden shadow rounded-lg">
-                                <div class="p-5">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 bg-indigo-500 rounded-md p-3">
-                                            <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                            </svg>
-                                        </div>
-                                        <div class="ml-5 w-0 flex-1">
-                                            <dl>
-                                                <dt class="text-sm font-medium text-gray-500 truncate">Total Users</dt>
-                                                <dd class="text-3xl font-semibold text-gray-900">10,897</dd>
-                                            </dl>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Card 2 -->
-                            <div class="bg-white overflow-hidden shadow rounded-lg">
-                                <div class="p-5">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 bg-green-500 rounded-md p-3">
-                                            <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                                            </svg>
-                                        </div>
-                                        <div class="ml-5 w-0 flex-1">
-                                            <dl>
-                                                <dt class="text-sm font-medium text-gray-500 truncate">Notifications</dt>
-                                                <dd class="text-3xl font-semibold text-gray-900">3,456</dd>
-                                            </dl>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Card 3 -->
-                            <div class="bg-white overflow-hidden shadow rounded-lg">
-                                <div class="p-5">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 bg-yellow-500 rounded-md p-3">
-                                            <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                            </svg>
-                                        </div>
-                                        <div class="ml-5 w-0 flex-1">
-                                            <dl>
-                                                <dt class="text-sm font-medium text-gray-500 truncate">Settings</dt>
-                                                <dd class="text-3xl font-semibold text-gray-900">5</dd>
-                                            </dl>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <!-- Card 2 -->
+                <div class="bg-white overflow-hidden shadow rounded-lg">
+                  <div class="p-5">
+                    <div class="flex items-center">
+                      <div class="flex-shrink-0 bg-green-500 rounded-md p-3">
+                        <svg
+                          class="h-6 w-6 text-white"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                          />
+                        </svg>
+                      </div>
+                      <div class="ml-5 w-0 flex-1">
+                        <dl>
+                          <dt
+                            class="text-sm font-medium text-gray-500 truncate"
+                          >
+                            Notifications
+                          </dt>
+                          <dd class="text-3xl font-semibold text-gray-900">
+                            3,456
+                          </dd>
+                        </dl>
+                      </div>
                     </div>
-
-                    <!-- Chart placeholder -->
-                    <div class="mt-8">
-                        <div class="bg-white shadow rounded-lg p-6">
-                            <h2 class="text-xl font-semibold text-gray-900 mb-4">Sales Overview</h2>
-                            <div class="h-64 bg-gray-200 rounded-lg flex items-center justify-center">
-                                <p class="text-gray-500">Chart Placeholder</p>
-                            </div>
-                        </div>
-                    </div>
-                    <section>
-                        <header class="bg-white space-y-4 p-4 sm:px-8 sm:py-6 lg:p-4 xl:px-8 xl:py-6">
-                          <div class="flex items-center justify-between">
-                            <h2 class="font-semibold text-slate-900">Projects</h2>
-                            <a href="/new" class="hover:bg-blue-400 group flex items-center rounded-md bg-blue-500 text-white text-sm font-medium pl-2 pr-3 py-2 shadow-sm">
-                              <svg width="20" height="20" fill="currentColor" class="mr-2" aria-hidden="true">
-                                <path d="M10 5a1 1 0 0 1 1 1v3h3a1 1 0 1 1 0 2h-3v3a1 1 0 1 1-2 0v-3H6a1 1 0 1 1 0-2h3V6a1 1 0 0 1 1-1Z" />
-                              </svg>
-                              New
-                            </a>
-                          </div>
-                          <form class="group relative">
-                            <svg width="20" height="20" fill="currentColor" class="absolute left-3 top-1/2 -mt-2.5 text-slate-400 pointer-events-none group-focus-within:text-blue-500" aria-hidden="true">
-                              <path fill-rule="evenodd" clip-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" />
-                            </svg>
-                            <input class="focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none w-full text-sm leading-6 text-slate-900 placeholder-slate-400 rounded-md py-2 pl-10 ring-1 ring-slate-200 shadow-sm" type="text" aria-label="Filter projects" placeholder="Filter projects...">
-                          </form>
-                        </header>
-                        <ul class="bg-slate-50 p-4 sm:px-8 sm:pt-6 sm:pb-8 lg:p-4 xl:px-8 xl:pt-6 xl:pb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-4 text-sm leading-6">
-                          <li x-for="project in projects">
-                            <a :href="project.url" class="hover:bg-blue-500 hover:ring-blue-500 hover:shadow-md group rounded-md p-3 bg-white ring-1 ring-slate-200 shadow-sm">
-                              <dl class="grid sm:block lg:grid xl:block grid-cols-2 grid-rows-2 items-center">
-                                <div>
-                                  <dt class="sr-only">Title</dt>
-                                  <dd class="group-hover:text-white font-semibold text-slate-900">
-                                    {project.title}
-                                  </dd>
-                                </div>
-                                <div>
-                                  <dt class="sr-only">Category</dt>
-                                  <dd class="group-hover:text-blue-200">{project.category}</dd>
-                                </div>
-                                <div class="col-start-2 row-start-1 row-end-3 sm:mt-4 lg:mt-0 xl:mt-4">
-                                  <dt class="sr-only">Users</dt>
-                                  <dd x-for="user in project.users" class="flex justify-end sm:justify-start lg:justify-end xl:justify-start -space-x-1.5">
-                                    <img :src="user.avatar" :alt="user.name" class="w-6 h-6 rounded-full bg-slate-100 ring-2 ring-white" loading="lazy">
-                                  </dd>
-                                </div>
-                              </dl>
-                            </a>
-                          </li>
-                          <li class="flex">
-                            <a href="/new" class="hover:border-blue-500 hover:border-solid hover:bg-white hover:text-blue-500 group w-full flex flex-col items-center justify-center rounded-md border-2 border-dashed border-slate-300 text-sm leading-6 text-slate-900 font-medium py-3">
-                              <svg class="group-hover:text-blue-500 mb-1 text-slate-400" width="20" height="20" fill="currentColor" aria-hidden="true">
-                                <path d="M10 5a1 1 0 0 1 1 1v3h3a1 1 0 1 1 0 2h-3v3a1 1 0 1 1-2 0v-3H6a1 1 0 1 1 0-2h3V6a1 1 0 0 1 1-1Z" />
-                              </svg>
-                              New project
-                            </a>
-                          </li>
-                        </ul>
-                      </section>
-                      
+                  </div>
                 </div>
-            </main>
-        </div>
+                <!-- Card 3 -->
+                <div class="bg-white overflow-hidden shadow rounded-lg">
+                  <div class="p-5">
+                    <div class="flex items-center">
+                      <div class="flex-shrink-0 bg-yellow-500 rounded-md p-3">
+                        <svg
+                          class="h-6 w-6 text-white"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                          />
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                        </svg>
+                      </div>
+                      <div class="ml-5 w-0 flex-1">
+                        <dl>
+                          <dt
+                            class="text-sm font-medium text-gray-500 truncate"
+                          >
+                            Settings
+                          </dt>
+                          <dd class="text-3xl font-semibold text-gray-900">
+                            5
+                          </dd>
+                        </dl>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Chart placeholder -->
+            <div class="mt-8">
+              <div class="bg-white shadow rounded-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                  Sales Overview
+                </h2>
+                <div
+                  class="h-64 bg-gray-200 rounded-lg flex items-center justify-center"
+                >
+                  <p class="text-gray-500">Chart Placeholder</p>
+                </div>
+              </div>
+            </div>
+            <section>
+              <header
+                class="bg-white space-y-4 p-4 sm:px-8 sm:py-6 lg:p-4 xl:px-8 xl:py-6"
+              >
+                <div class="flex items-center justify-between">
+                  <h2 class="font-semibold text-slate-900">Projects</h2>
+                  <a
+                    href="/new"
+                    class="hover:bg-blue-400 group flex items-center rounded-md bg-blue-500 text-white text-sm font-medium pl-2 pr-3 py-2 shadow-sm"
+                  >
+                    <svg
+                      width="20"
+                      height="20"
+                      fill="currentColor"
+                      class="mr-2"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M10 5a1 1 0 0 1 1 1v3h3a1 1 0 1 1 0 2h-3v3a1 1 0 1 1-2 0v-3H6a1 1 0 1 1 0-2h3V6a1 1 0 0 1 1-1Z"
+                      />
+                    </svg>
+                    New
+                  </a>
+                </div>
+                <form class="group relative">
+                  <svg
+                    width="20"
+                    height="20"
+                    fill="currentColor"
+                    class="absolute left-3 top-1/2 -mt-2.5 text-slate-400 pointer-events-none group-focus-within:text-blue-500"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      clip-rule="evenodd"
+                      d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                    />
+                  </svg>
+                  <input
+                    class="focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none w-full text-sm leading-6 text-slate-900 placeholder-slate-400 rounded-md py-2 pl-10 ring-1 ring-slate-200 shadow-sm"
+                    type="text"
+                    aria-label="Filter projects"
+                    placeholder="Filter projects..."
+                  />
+                </form>
+              </header>
+              <ul
+                class="bg-slate-50 p-4 sm:px-8 sm:pt-6 sm:pb-8 lg:p-4 xl:px-8 xl:pt-6 xl:pb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-4 text-sm leading-6"
+              >
+                <li x-for="project in projects">
+                  <a
+                    :href="project.url"
+                    class="hover:bg-blue-500 hover:ring-blue-500 hover:shadow-md group rounded-md p-3 bg-white ring-1 ring-slate-200 shadow-sm"
+                  >
+                    <dl
+                      class="grid sm:block lg:grid xl:block grid-cols-2 grid-rows-2 items-center"
+                    >
+                      <div>
+                        <dt class="sr-only">Title</dt>
+                        <dd
+                          class="group-hover:text-white font-semibold text-slate-900"
+                        >
+                          {project.title}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt class="sr-only">Category</dt>
+                        <dd class="group-hover:text-blue-200">
+                          {project.category}
+                        </dd>
+                      </div>
+                      <div
+                        class="col-start-2 row-start-1 row-end-3 sm:mt-4 lg:mt-0 xl:mt-4"
+                      >
+                        <dt class="sr-only">Users</dt>
+                        <dd
+                          x-for="user in project.users"
+                          class="flex justify-end sm:justify-start lg:justify-end xl:justify-start -space-x-1.5"
+                        >
+                          <img
+                            :src="user.avatar"
+                            :alt="user.name"
+                            class="w-6 h-6 rounded-full bg-slate-100 ring-2 ring-white"
+                            loading="lazy"
+                          />
+                        </dd>
+                      </div>
+                    </dl>
+                  </a>
+                </li>
+                <li class="flex">
+                  <a
+                    href="/new"
+                    class="hover:border-blue-500 hover:border-solid hover:bg-white hover:text-blue-500 group w-full flex flex-col items-center justify-center rounded-md border-2 border-dashed border-slate-300 text-sm leading-6 text-slate-900 font-medium py-3"
+                  >
+                    <svg
+                      class="group-hover:text-blue-500 mb-1 text-slate-400"
+                      width="20"
+                      height="20"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M10 5a1 1 0 0 1 1 1v3h3a1 1 0 1 1 0 2h-3v3a1 1 0 1 1-2 0v-3H6a1 1 0 1 1 0-2h3V6a1 1 0 0 1 1-1Z"
+                      />
+                    </svg>
+                    New project
+                  </a>
+                </li>
+              </ul>
+            </section>
+          </div>
+        </main>
+      </div>
     </div>
 
     <script>
-        const menuToggle = document.getElementById('menu-toggle');
-        const sidebar = document.getElementById('sidebar');
+      const menuToggle = document.getElementById("menu-toggle");
+      const sidebar = document.getElementById("sidebar");
 
-        menuToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('open');
-        });
+      menuToggle.addEventListener("click", () => {
+        sidebar.classList.toggle("open");
+      });
     </script>
-</body>
+  </body>
 </html>

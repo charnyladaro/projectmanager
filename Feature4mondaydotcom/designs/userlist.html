@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Management Interface</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+      .container {
+        background-color: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      h2 {
+        color: #333;
+        margin-top: 0;
+      }
+      .filter-section {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+      input,
+      select {
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+      button {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        color: white;
+        cursor: pointer;
+      }
+      .filter-btn {
+        background-color: #8a2be2;
+      }
+      .clear-btn {
+        background-color: #ff7f7f;
+      }
+      .add-user-btn {
+        background-color: #8a2be2;
+      }
+      .delete-btn {
+        background-color: #ff7f7f;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 12px;
+        border-bottom: 1px solid #ddd;
+      }
+      .user-role {
+        background-color: #ffe4e1;
+        color: #ff6347;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.8em;
+      }
+      .status {
+        display: flex;
+        align-items: center;
+      }
+      .status::before {
+        content: "";
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 5px;
+      }
+      .online::before {
+        background-color: #32cd32;
+      }
+      .offline::before {
+        background-color: #ff0000;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="filter-section">
+        <input type="text" placeholder="Mobile" />
+        <button class="clear-btn">Search</button>
+      </div>
+
+      <h2>Users</h2>
+      <div
+        style="display: flex; justify-content: flex-end; margin-bottom: 10px"
+      >
+        <button class="add-user-btn">+ Add User</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Mobile</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>John Doe</td>
+            <td>john@example.com</td>
+            <td><span class="user-role">Admin</span></td>
+            <td>1234567890</td>
+            <td>2023-01-01</td>
+            <td><span class="status online">Online</span></td>
+            <td>Edit / Delete</td>
+          </tr>
+          <!-- Add more rows as needed -->
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>
