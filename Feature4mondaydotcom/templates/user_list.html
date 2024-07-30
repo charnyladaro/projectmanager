@@ -1,45 +1,66 @@
-{% extends "base.html" %}
+{% extends "base.html" %} {% block content %}
+<div class="row align-items-center">
+  <div class="row">
+    <table class="user_table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Role</th>
+          <th>Email</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr>
+          <td>
+            <img
+              src="{{ user|profile_pic_url }}"
+              alt="{{ user.username }}'s profile picture"
+            />
+          </td>
+          <td>
+            <a
+              href="{{ url_for('user_profile', user_id=user.id) }}"
+              class="text-dark"
+              >{{ user.username }}</a
+            >
+          </td>
+          <td><span class="user-role">Admin</span></td>
+          <td>{{ user.email }}</td>
+          <td>2023-01-01</td>
+          <td>
+            <span class="status online"
+              >{% if user.is_active %}Active{% else %}Inactive{% endif %}</span
+            >
+          </td>
+          <td>
+            <a
+              href="{{ url_for('user_profile', user_id=user.id) }}"
+              class="btn btn-outline btn-sm"
+              >View Profile</a
+            >
+          </td>
+        </tr>
+        {% endfor %}
+        <!-- Add more rows as needed -->
+      </tbody>
+    </table>
+  </div>
+</div>
 
-{% block content %}
-{% for user in users %}
-    <div class="row align-items-center">
-            <div class="candidates-listing-item">
-                <div class="list-grid-item mt-4 p-2">
-                    <div class="row">
-                        <div class="col-md-9">
-                            <div class="candidates-img float-left mr-4">
-                                <img src="{{ user|profile_pic_url }}"
-                                     alt="{{ user.username }}'s profile picture"
-                                     class="profile-pic img-fluid d-block rounded">
-                            </div>
-                            <div class="candidates-list-desc job-single-meta pt-2">
-                                <h5 class="mb-2 f-19"><a href="{{ url_for('user_profile', user_id=user.id) }}" class="text-dark">{{ user.username }}</a></h5>
-                                <ul class="list-inline mb-0">
-                                    <li class="list-inline-item mr-4">
-                                        <p class="text-muted f-15 mb-0"><i class="mdi mdi-account mr-1"></i>Web Developer</p>
-                                    </li>
-                                    <li class="list-inline-item mr-4">
-                                        <p class="f-15 mb-0"><a href="#" class="text-muted"><i class="mdi mdi-map-marker mr-1"></i>Scenic Way Atlanta.</a></p>
-                                    </li>
-                                    <li class="list-inline-item">
-                                        <p class="text-muted f-15 mb-0 status-indicator {% if user.is_active %}active{% else %}inactive{% endif %}"><i class="mdi mdi-currency-usd mr-1"></i>{% if user.is_active %}Active{% else %}Inactive{% endif %}</p>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="candidates-list-fav-btn text-right">
-                                <div class="fav-icon">
-                                    <i class="mdi mdi-heart f-20"></i>
-                                </div>
-                                <div class="candidates-listing-btn mt-4">
-                                    <a href="{{ url_for('user_profile', user_id=user.id) }}" class="btn btn-outline btn-sm">View Profile</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>                    
-                </div>
-            </div>
-        </div>
-{% endfor %}
+<style>
+  .user_table thead tr th,
+  .user_table tbody tr td {
+    text-align: center;
+  }
+  .user_table tbody tr td img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+  }
+</style>
 {% endblock %}

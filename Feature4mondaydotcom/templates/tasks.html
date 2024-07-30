@@ -57,49 +57,53 @@
 </div>
 
 <h2>All Tasks</h2>
-{% for task in tasks %}
-<div class="task-item">
-  <h3>{{ task.title }} - {{ task.status }}</h3>
-  <p>{{ task.description }}</p>
-  <p>Due date: {{ task.due_date.strftime('%Y-%m-%d') }}</p>
-  <p>Time spent: {{ task.formatted_time_spent }}</p>
-  <p>
-    Assigned to: {% for user in task.assigned_users %}
-    <img
-      src="{{ user|profile_pic_url }}"
-      alt="{{ user.username }}'s profile picture"
-      class="profile-pic"
-    />{{ user.username }}{% if not loop.last %}, {% endif %} {% endfor %}
-  </p>
-  {% if task.files %}
-  <h4>Uploaded Files:</h4>
-  <ul class="uploaded-files">
-    {% for file in task.files %}
-    <li class="uploaded-file">
-      {% if file.file_type == 'image' %}
+<div id="allTasksContainer">
+  {% for task in tasks %}
+  <div class="task-item" data-project-id="{{ task.project_id }}">
+    <h3>{{ task.title }} - {{ task.status }}</h3>
+    <p>{{ task.description }}</p>
+    <p>Due date: {{ task.due_date.strftime('%Y-%m-%d') }}</p>
+    <p>Time spent: {{ task.formatted_time_spent }}</p>
+    <p>
+      Assigned to: {% for user in task.assigned_users %}
       <img
-        src="{{ url_for('serve_file', file_id=file.id) }}"
-        alt="Uploaded image"
-        class="uploaded-image"
-      />
-      {% endif %}
-      <a href="{{ url_for('download_file', file_id=file.id) }}"
-        >{{ file.filename }}</a
-      >
-      <button class="btn delete-file-btn" data-file-id="{{ file.id }}">
-        Delete File
-      </button>
-    </li>
-    {% endfor %}
-  </ul>
-  {% endif %}
-  <form
-    action="{{ url_for('delete_task', task_id=task.id) }}"
-    method="POST"
-    onsubmit="return confirm('Are you sure you want to delete this task?');"
-  >
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-    <button type="submit" class="btn">Delete Task</button>
-  </form>
+        src="{{ user|profile_pic_url }}"
+        alt="{{ user.username }}'s profile picture"
+        class="profile-pic"
+      />{{ user.username }}{% if not loop.last %}, {% endif %} {% endfor %}
+    </p>
+    {% if task.files %}
+    <h4>Uploaded Files:</h4>
+    <ul class="uploaded-files">
+      {% for file in task.files %}
+      <li class="uploaded-file">
+        {% if file.file_type == 'image' %}
+        <img
+          src="{{ url_for('serve_file', file_id=file.id) }}"
+          alt="Uploaded image"
+          class="uploaded-image"
+        />
+        {% endif %}
+        <a href="{{ url_for('download_file', file_id=file.id) }}"
+          >{{ file.filename }}</a
+        >
+        <button class="btn delete-file-btn" data-file-id="{{ file.id }}">
+          Delete File
+        </button>
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    <form
+      action="{{ url_for('delete_task', task_id=task.id) }}"
+      method="POST"
+      onsubmit="return confirm('Are you sure you want to delete this task?');"
+    >
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      <button type="submit" class="btn">Delete Task</button>
+    </form>
+  </div>
+  {% endfor %}
 </div>
-{% endfor %} {% endblock %}
+
+{% endblock %}
