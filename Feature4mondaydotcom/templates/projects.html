@@ -1,19 +1,10 @@
 {% extends "base.html" %} {% block content %}
 
-<!-- Add New Project Button -->
-<button
-  type="button"
-  class="btn btn-primary mb-3"
-  data-toggle="modal"
-  data-target="#addProjectModal"
->
-  <i class="mdi mdi-plus me-2"></i>Add New Project
-</button>
+<h2 class="mb-4">Add New Project</h2>
 
-<!-- Add Project Modal -->
 <div
-  class="modal fade"
   id="addProjectModal"
+  class="modal fade"
   tabindex="-1"
   role="dialog"
   aria-labelledby="addProjectModalLabel"
@@ -33,147 +24,50 @@
         </button>
       </div>
       <div class="modal-body">
-        <form method="POST" class="form-section">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <form id="addProjectForm">
           <div class="form-group">
             <label for="projectName">Project Name</label>
-            <input
-              type="text"
-              name="project_name"
-              placeholder="Project Name"
-              required
-              class="input-field form-control"
-              id="projectName"
-            />
+            <input type="text" class="form-control" id="projectName" required />
           </div>
           <div class="form-group">
             <label for="projectDescription">Project Description</label>
             <textarea
-              class="form-control input-field"
+              class="form-control"
               id="projectDescription"
-              placeholder="Project Description"
               rows="3"
-              name="project_description"
-              required
             ></textarea>
           </div>
-          <button type="submit" name="add_project" class="btn btn-primary">
-            Add Project
-          </button>
+          <button type="submit" class="btn btn-primary">Add Project</button>
         </form>
       </div>
     </div>
   </div>
 </div>
 
-<!-- All Projects Section -->
 <div class="dashboard-section">
-  <h2 class="mb-4">All Projects</h2>
-  <div class="row" id="projectsContainer">
+  <h2 id="all-projects" class="mb-4">All Projects</h2>
+  <div id="projectsContainer" class="row">
     {% for project in projects %}
     <div class="col-md-4 mb-4">
-      <div class="card project-card" data-project-id="{{ project.id }}">
-        <div class="card-body project-item">
-          <h5 class="card-title">{{ project.name }}</h5>
-          <p class="card-text">{{ project.description }}</p>
-          <button
-            class="btn btn-primary btn-sm view-tasks"
-            data-project-id="{{ project.id }}"
-          >
-            View Tasks
-          </button>
-          <button
-            class="btn btn-danger btn-sm delete-project"
-            data-project-id="{{ project.id }}"
-          >
-            <i class="mdi mdi-delete me-2"></i>Delete Project
-          </button>
+      <a href="{{ url_for('project_list', project_id=project.id) }}">
+        <div class="card project-card" data-project-id="{{ project.id }}">
+          <div class="card-body project-item">
+            <h5 class="card-title">{{ project.name }}</h5>
+            <p class="card-text">{{ project.description }}</p>
+            <a
+              href="{{ url_for('project_list', project_id=project.id) }}"
+              class="btn btn-primary"
+              >View Tasks</a
+            >
+            <button class="btn btn-danger delete-project">
+              Delete Project
+            </button>
+          </div>
         </div>
-      </div>
+      </a>
     </div>
     {% endfor %}
   </div>
 </div>
-
-<!-- Task List Modal -->
-<div
-  class="modal fade"
-  id="taskListModal"
-  tabindex="-1"
-  role="dialog"
-  aria-labelledby="taskListModalLabel"
-  aria-hidden="true"
->
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="taskListModalLabel">Tasks for Project</h5>
-        <button
-          type="button"
-          class="close"
-          data-dismiss="modal"
-          aria-label="Close"
-        >
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <ul id="taskList" class="list-unstyled">
-          <!-- Task items will be appended here dynamically -->
-        </ul>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const viewTasksButtons = document.querySelectorAll(".view-tasks");
-    const taskList = document.getElementById("taskList");
-
-    viewTasksButtons.forEach((button) => {
-      button.addEventListener("click", function () {
-        const projectId = this.dataset.projectId;
-
-        // Fetch tasks related to the project using an AJAX request
-        fetch(`/projects/${projectId}/tasks`)
-          .then((response) => response.json())
-          .then((data) => {
-            // Clear previous tasks
-            taskList.innerHTML = "";
-
-            // Add new tasks to the modal
-            data.tasks.forEach((task) => {
-              const taskItem = document.createElement("li");
-              taskItem.innerHTML = `
-                <h6>${task.title} - ${task.status}</h6>
-                <p>Due date: ${new Date(task.due_date).toLocaleDateString()}</p>
-                <p>Assigned to:</p>
-                <ul>
-                  ${task.assigned_users
-                    .map(
-                      (user) => `
-                    <li>
-                      <img src="${user.profile_pic_url}" alt="${user.username}'s profile picture" class="profile-pic-small" />
-                      ${user.username}
-                    </li>
-                  `
-                    )
-                    .join("")}
-                </ul>
-              `;
-              taskList.appendChild(taskItem);
-            });
-
-            // Open the modal
-            $("#taskListModal").modal("show");
-          })
-          .catch((error) => {
-            console.error("Error fetching tasks:", error);
-          });
-      });
-    });
-  });
-</script>
 
 {% endblock %}

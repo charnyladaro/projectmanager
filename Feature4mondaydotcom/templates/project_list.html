@@ -1,0 +1,155 @@
+{% extends "base.html" %} {% block content %}
+
+<h2 class="mb-4">Tasks for Project: {{ project.name }}</h2>
+
+<div class="row">
+  <div class="col-md-12">
+    <a href="{{ url_for('projects') }}" class="btn btn-secondary mb-3"
+      >Back to Projects</a
+    >
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Status</th>
+          <th>Due Date</th>
+          <th>Assigned To</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for task in tasks %}
+        <tr>
+          <td>{{ task.title }}</td>
+          <td>{{ task.description }}</td>
+          <td>{{ task.status }}</td>
+          <td>
+            {{ task.due_date.strftime('%Y-%m-%d') if task.due_date else 'Not
+            set' }}
+          </td>
+          <td>
+            {% for user in task.assigned_users %}
+            <span class="badge badge-primary">{{ user.username }}</span>
+            {% endfor %}
+          </td>
+          <td>
+            <button
+              class="btn btn-sm btn-primary edit-task"
+              data-task-id="{{ task.id }}"
+            >
+              Edit
+            </button>
+            <button
+              class="btn btn-sm btn-danger delete-task"
+              data-task-id="{{ task.id }}"
+            >
+              Delete
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="row mt-4">
+  <div class="col-md-12">
+    <button
+      class="btn btn-success"
+      data-toggle="modal"
+      data-target="#addTaskModal"
+    >
+      Add New Task
+    </button>
+  </div>
+</div>
+
+<!-- Add Task Modal -->
+<div
+  class="modal fade"
+  id="addTaskModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="addTaskModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addTaskModalLabel">Add New Task</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="addTaskForm" action="{{ url_for('tasks') }}" method="POST">
+          <input type="hidden" name="project_id" value="{{ project.id }}" />
+          <div class="form-group">
+            <label for="taskTitle">Task Title</label>
+            <input
+              type="text"
+              class="form-control"
+              id="taskTitle"
+              name="task_title"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="taskDescription">Task Description</label>
+            <textarea
+              class="form-control"
+              id="taskDescription"
+              name="task_description"
+              rows="3"
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label for="taskStatus">Status</label>
+            <select class="form-control" id="taskStatus" name="task_status">
+              <option value="To Do">To Do</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Done">Done</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="dueDate">Due Date</label>
+            <input
+              type="date"
+              class="form-control"
+              id="dueDate"
+              name="due_date"
+            />
+          </div>
+          <div class="form-group">
+            <label for="assignedTo">Assigned To</label>
+            <select
+              multiple
+              class="form-control"
+              id="assignedTo"
+              name="assigned_to[]"
+            >
+              {% for user in users %}
+              <option value="{{ user.id }}">{{ user.username }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary">Add Task</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

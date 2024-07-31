@@ -9,6 +9,8 @@ from flask import (
     send_file,
     send_from_directory,
     abort,
+    make_response,
+    session,
 )
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import (
@@ -23,7 +25,7 @@ from flask_mail import Mail, Message
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import URLSafeTimedSerializer
 from werkzeug.utils import secure_filename
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy import DateTime
 from sqlalchemy.sql import func
 import os
@@ -31,7 +33,7 @@ import mimetypes
 from functools import wraps
 from flask_wtf.csrf import CSRFProtect, generate_csrf
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, Length
 from sqlalchemy.orm import relationship, declarative_base
 from email_validator import validate_email, EmailNotValidError
@@ -146,6 +148,8 @@ class User(UserMixin, db.Model):
     assigned_tasks = db.relationship(
         "Task", secondary=task_assignments, back_populates="assigned_users"
     )
+    session_id = db.Column(db.String(32))
+    session_expiry = db.Column(db.DateTime)
     # Update these relationships
     sent_chat_requests = db.relationship(
         "ChatRequest",
@@ -190,6 +194,34 @@ friendship = db.Table(
     db.Column("user_id", db.Integer, db.ForeignKey("user.id"), primary_key=True),
     db.Column("friend_id", db.Integer, db.ForeignKey("user.id"), primary_key=True),
 )
+
+
+class AddUserForm(FlaskForm):
+    username = StringField("Username", validators=[DataRequired()])
+    email = StringField("Email", validators=[DataRequired(), Email()])
+    password = PasswordField("Password", validators=[DataRequired()])
+    confirm_password = PasswordField(
+        "Confirm Password", validators=[DataRequired(), EqualTo("password")]
+    )
+    is_admin = BooleanField("Is Admin")
+    profile_picture = FileField(
+        "Profile Picture", validators=[FileAllowed(["jpg", "png", "jpeg", "gif"])]
+    )
+    submit = SubmitField("Add User")
+
+    def validate_username(self, username):
+        user = User.query.filter_by(username=username.data).first()
+        if user:
+            raise ValidationError(
+                "Username already exists. Please choose a different one."
+            )
+
+    def validate_email(self, email):
+        user = User.query.filter_by(email=email.data).first()
+        if user:
+            raise ValidationError(
+                "Email already exists. Please choose a different one."
+            )
 
 
 class EditProfileForm(FlaskForm):
@@ -295,6 +327,33 @@ class ForgotPasswordForm(FlaskForm):
 
 
 db.configure_mappers()
+
+
+def generate_session_token():
+    return secrets.token_hex(16)
+
+
+def set_session_cookie(response, user_id):
+    session_token = generate_session_token()
+    expires = datetime.utcnow() + timedelta(minutes=30)
+    response.set_cookie(
+        "session_token",
+        session_token,
+        expires=expires,
+        httponly=True,
+        secure=True,
+        samesite="Strict",
+    )
+    user = User.query.get(user_id)
+    user.session_token = session_token
+    user.session_expiry = expires
+    db.session.commit()
+
+
+def clear_session_cookie(response):
+    response.set_cookie(
+        "session_token", "", expires=0, httponly=True, secure=True, samesite="Strict"
+    )
 
 
 @login_manager.user_loader
@@ -593,7 +652,16 @@ def login():
         user = User.query.filter_by(username=username).first()
         if user and check_password_hash(user.password, password):
             login_user(user)
-            return redirect(url_for("dashboard"))
+            new_csrf_token = set_session(user)
+            response = make_response(redirect(url_for("dashboard")))
+            response.set_cookie(
+                "csrf_token",
+                new_csrf_token,
+                httponly=True,
+                secure=True,
+                samesite="Strict",
+            )
+            return response
         else:
             flash("Invalid username or password", "error")
     return render_template("login.html", form=form)
@@ -602,8 +670,89 @@ def login():
 @app.route("/logout")
 @login_required
 def logout():
+    # Clear the current user's session data
+    user = current_user
+    user.session_id = None
+    user.session_expiry = None
+    db.session.commit()
+
+    # Perform Flask-Login logout
     logout_user()
-    return redirect(url_for("index"))
+
+    # Clear the session
+    session.clear()
+
+    # Generate a new CSRF token
+    new_csrf_token = generate_csrf()
+
+    # Create a response object
+    response = make_response(redirect(url_for("index")))
+
+    # Set the new CSRF token as a cookie
+    response.set_cookie(
+        "csrf_token", new_csrf_token, httponly=True, secure=True, samesite="Strict"
+    )
+
+    return response
+
+
+@app.route("/add_user", methods=["GET", "POST"])
+@login_required
+@admin_required
+def add_user():
+    form = AddUserForm()
+    if form.validate_on_submit():
+        hashed_password = generate_password_hash(form.password.data)
+        new_user = User(
+            username=form.username.data,
+            email=form.email.data,
+            password=hashed_password,
+            is_admin=form.is_admin.data,
+        )
+
+        if form.profile_picture.data:
+            picture_file = save_picture(form.profile_picture.data)
+            new_user.profile_picture = picture_file
+        else:
+            new_user.profile_picture = generate_initials_image(new_user.username)
+
+        db.session.add(new_user)
+        db.session.commit()
+        flash("New user has been created!", "success")
+        return redirect(url_for("user_list"))
+    return render_template("user_list.html", form=form, users=User.query.all())
+
+
+@app.before_request
+def check_session():
+    if current_user.is_authenticated:
+        if "session_id" not in session:
+            return logout()
+
+        user = User.query.filter_by(
+            id=current_user.id, session_id=session["session_id"]
+        ).first()
+        if not user or user.session_expiry < datetime.utcnow():
+            return logout()
+
+        # Refresh the session if it's close to expiring
+        if user.session_expiry - datetime.utcnow() < timedelta(minutes=5):
+            user.session_expiry = datetime.utcnow() + timedelta(minutes=30)
+            db.session.commit()
+
+
+def set_session(user):
+    session_id = secrets.token_hex(16)
+    session["session_id"] = session_id
+    user.session_id = session_id
+    user.session_expiry = datetime.utcnow() + timedelta(minutes=30)
+    db.session.commit()
+
+    # Generate a new CSRF token
+    new_csrf_token = generate_csrf()
+
+    # Return the new CSRF token so it can be set in the response
+    return new_csrf_token
 
 
 @app.route("/dashboard")
@@ -664,15 +813,9 @@ pass
 @login_required
 @admin_required
 def user_list():
-
+    form = AddUserForm()
     users = User.query.filter(User.id != current_user.id).all()
-    all_projects = Project.query.all()
-    all_tasks = Task.query.all()
-
-    return render_template("user_list.html", users=users)
-
-
-pass
+    return render_template("user_list.html", users=users, form=form)
 
 
 def format_time_spent(hours):
@@ -727,6 +870,17 @@ def get_project_tasks(project_id):
         task_data.append(task_info)
 
     return jsonify({"tasks": task_data})
+
+
+@app.route("/project/<int:project_id>")
+@login_required
+def project_list(project_id):
+    project = Project.query.get_or_404(project_id)
+    tasks = Task.query.filter_by(project_id=project_id).all()
+    users = User.query.all()
+    return render_template(
+        "project_list.html", project=project, tasks=tasks, users=users
+    )
 
 
 @app.route("/tasks", methods=["GET", "POST"])

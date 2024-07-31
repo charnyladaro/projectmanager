@@ -1,66 +1,123 @@
 {% extends "base.html" %} {% block content %}
-<div class="row align-items-center">
-  <div class="row">
-    <table class="user_table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Name</th>
-          <th>Role</th>
-          <th>Email</th>
-          <th>Date</th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for user in users %}
-        <tr>
-          <td>
-            <img
-              src="{{ user|profile_pic_url }}"
-              alt="{{ user.username }}'s profile picture"
-            />
-          </td>
-          <td>
-            <a
-              href="{{ url_for('user_profile', user_id=user.id) }}"
-              class="text-dark"
-              >{{ user.username }}</a
-            >
-          </td>
-          <td><span class="user-role">Admin</span></td>
-          <td>{{ user.email }}</td>
-          <td>2023-01-01</td>
-          <td>
-            <span class="status online"
-              >{% if user.is_active %}Active{% else %}Inactive{% endif %}</span
-            >
-          </td>
-          <td>
-            <a
-              href="{{ url_for('user_profile', user_id=user.id) }}"
-              class="btn btn-outline btn-sm"
-              >View Profile</a
-            >
-          </td>
-        </tr>
-        {% endfor %}
-        <!-- Add more rows as needed -->
-      </tbody>
-    </table>
+<div class="container mt-4">
+  <h2>User List</h2>
+  <button
+    type="button"
+    class="btn btn-primary mb-3"
+    data-toggle="modal"
+    data-target="#addUserModal"
+  >
+    Add New User
+  </button>
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Profile Picture</th>
+        <th>Name</th>
+        <th>Role</th>
+        <th>Email</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %}
+      <tr>
+        <td>
+          <img
+            src="{{ user|profile_pic_url }}"
+            alt="{{ user.username }}'s profile picture"
+            class="rounded-circle"
+            width="50"
+            height="50"
+          />
+        </td>
+        <td>
+          <a
+            href="{{ url_for('user_profile', user_id=user.id) }}"
+            class="text-dark"
+            >{{ user.username }}</a
+          >
+        </td>
+        <td>{% if user.is_admin %}Admin{% else %}User{% endif %}</td>
+        <td>{{ user.email }}</td>
+        <td>
+          <span
+            class="badge {% if user.is_active %}badge-success{% else %}badge-danger{% endif %}"
+          >
+            {% if user.is_active %}Active{% else %}Inactive{% endif %}
+          </span>
+        </td>
+        <td>
+          <a
+            href="{{ url_for('user_profile', user_id=user.id) }}"
+            class="btn btn-outline-primary btn-sm"
+            >View Profile</a
+          >
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Add User Modal -->
+  <div
+    class="modal fade"
+    id="addUserModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="addUserModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addUserModalLabel">Add New User</h5>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form
+            action="{{ url_for('add_user') }}"
+            method="POST"
+            enctype="multipart/form-data"
+          >
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+              {{ form.username.label }} {{ form.username(class="form-control")
+              }}
+            </div>
+            <div class="form-group">
+              {{ form.email.label }} {{ form.email(class="form-control") }}
+            </div>
+            <div class="form-group">
+              {{ form.password.label }} {{ form.password(class="form-control")
+              }}
+            </div>
+            <div class="form-group">
+              {{ form.confirm_password.label }} {{
+              form.confirm_password(class="form-control") }}
+            </div>
+            <div class="form-group">
+              {{ form.is_admin.label }} {{ form.is_admin(class="form-check-input
+              ml-1") }}
+            </div>
+            <div class="form-group">
+              {{ form.profile_picture.label }} {{
+              form.profile_picture(class="form-control-file") }}
+            </div>
+            <button type="submit" class="btn btn-primary">Add User</button>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
-
-<style>
-  .user_table thead tr th,
-  .user_table tbody tr td {
-    text-align: center;
-  }
-  .user_table tbody tr td img {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-  }
-</style>
 {% endblock %}
